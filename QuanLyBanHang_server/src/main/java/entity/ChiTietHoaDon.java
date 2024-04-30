@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -14,9 +15,11 @@ public class ChiTietHoaDon implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@Id
 	@ManyToOne
 	@JoinColumn(name = "maHoaDon" )
 	private HoaDon hoaDon;
+	@Id
 	@ManyToOne
 	@JoinColumn(name = "maHangHoa")
 	private HangHoa hangHoa;

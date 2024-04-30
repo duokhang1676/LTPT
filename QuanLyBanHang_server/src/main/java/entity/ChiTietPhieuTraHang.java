@@ -2,6 +2,7 @@ package entity;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -10,9 +11,11 @@ public class ChiTietPhieuTraHang implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@Id
 	@ManyToOne
 	@JoinColumn(name = "maPhieuTraHang")
 	private PhieuTraHang phieuTraHang;
+	@Id
 	@ManyToOne
 	@JoinColumn(name = "maHangHoa")
 	private HangHoa hangHoa;

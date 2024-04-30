@@ -55,7 +55,6 @@ public class TaiKhoan extends javax.swing.JPanel {
         btnDangXuat = new javax.swing.JButton();
         bntDoiMK = new javax.swing.JButton();
         btnKetCa1 = new javax.swing.JButton();
-        btnKetCa = new javax.swing.JButton();
         pnlHoTen1 = new javax.swing.JPanel();
         lblHoTen1 = new javax.swing.JLabel();
         txtHoTen1 = new javax.swing.JTextField();
@@ -290,19 +289,11 @@ public class TaiKhoan extends javax.swing.JPanel {
             }
         });
 
-        btnKetCa1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         btnKetCa1.setText("Lưu");
+        btnKetCa1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         btnKetCa1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnKetCa1ActionPerformed(evt);
-            }
-        });
-
-        btnKetCa.setText("Kết ca");
-        btnKetCa.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        btnKetCa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnKetCaActionPerformed(evt);
             }
         });
 
@@ -315,11 +306,9 @@ public class TaiKhoan extends javax.swing.JPanel {
                 .addGroup(pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnDangXuat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnlButtonLayout.createSequentialGroup()
-                        .addComponent(bntDoiMK, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(64, 64, 64)
-                        .addComponent(btnKetCa, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
-                        .addComponent(btnKetCa1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(bntDoiMK, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
+                        .addComponent(btnKetCa1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         pnlButtonLayout.setVerticalGroup(
@@ -328,8 +317,7 @@ public class TaiKhoan extends javax.swing.JPanel {
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(pnlButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bntDoiMK, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnKetCa1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnKetCa, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnKetCa1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(btnDangXuat, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -437,11 +425,6 @@ public class TaiKhoan extends javax.swing.JPanel {
     	AddContent.addContent(new DoiMatKhau());
     }//GEN-LAST:event_bntDoiMKActionPerformed
 
-    private void btnKetCaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKetCaActionPerformed
-        // TODO add your handling code here:
-    	
-    }//GEN-LAST:event_btnKetCaActionPerformed
-
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButton2ActionPerformed
@@ -462,7 +445,6 @@ public class TaiKhoan extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bntDoiMK;
     private javax.swing.JButton btnDangXuat;
-    private javax.swing.JButton btnKetCa;
     private javax.swing.JButton btnKetCa1;
     private javax.swing.JPanel content;
     private com.github.lgooddatepicker.components.DatePicker datePicker1;

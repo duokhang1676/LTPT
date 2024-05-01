@@ -302,7 +302,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
     // End of variables declaration//GEN-END:variables
 
     private void addTableHangHoa() {
-        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Loại hàng",  "Quy cách đóng gói","Số lượng","Thành tiền", "Trạng thái"};
+        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Loại hàng","Số lượng","Thành tiền", "Trạng thái"};
         
         model_hangHoa = new DefaultTableModel(colNames, 0);
         tbl_hangHoa = new JTable(model_hangHoa);
@@ -316,7 +316,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
             tbl_hangHoa.getColumnModel().getColumn(4).setResizable(false);
             tbl_hangHoa.getColumnModel().getColumn(5).setResizable(false);
             tbl_hangHoa.getColumnModel().getColumn(6).setResizable(false);
-            tbl_hangHoa.getColumnModel().getColumn(7).setResizable(false);
+           
         }
         
         JTableHeader headerTable =  tbl_hangHoa.getTableHeader();

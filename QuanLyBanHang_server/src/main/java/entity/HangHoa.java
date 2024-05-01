@@ -10,11 +10,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "hanghoa")
+@NamedNativeQueries({
+	@NamedNativeQuery(name = "hanghoa.findAll", query = "Select * from hanghoa")
+})
 public class HangHoa implements Serializable{
 	/**
 	 * 
@@ -24,16 +29,12 @@ public class HangHoa implements Serializable{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String maHangHoa;
 	private String tenHangHoa;
-	private String soDangKy;
 	
 	@ManyToOne
 	@JoinColumn(name = "maNhomHang")
 	private NhomHang nhomHang;
 	private String nuocSanXuat;
 	private String hangSanXuat;
-	private String hoatChatChinh;
-	private String hamLuong;
-	private String quyCachDongGoi;
 	private String moTa;
 	private double thue;
 	private String maVach;
@@ -49,20 +50,16 @@ public class HangHoa implements Serializable{
 	private LocalDate ngaySanXuat;
 	private LocalDate hanSuDung;
 	private TrangThaiHangHoa trangThaiHangHoa;
-	public HangHoa(String maHangHoa, String tenHangHoa, String soDangKy, NhomHang nhomHang, String nuocSanXuat,
-			String hangSanXuat, String hoatChatChinh, String hamLuong, String quyCachDongGoi, String moTa, double thue,
-			String maVach, int soLuongDinhMuc, int soLuongCanhBao, String donViTinh, double giaNhap, double giaBan,
-			NhaCungCap nhaCungCap, LocalDate ngaySanXuat, LocalDate hanSuDung, TrangThaiHangHoa trangThaiHangHoa) {
+	public HangHoa(String maHangHoa, String tenHangHoa, NhomHang nhomHang, String nuocSanXuat, String hangSanXuat,
+			String moTa, double thue, String maVach, int soLuongDinhMuc, int soLuongCanhBao,
+			String donViTinh, double giaNhap, double giaBan, NhaCungCap nhaCungCap, LocalDate ngaySanXuat,
+			LocalDate hanSuDung, TrangThaiHangHoa trangThaiHangHoa) {
 		super();
 		this.maHangHoa = maHangHoa;
 		this.tenHangHoa = tenHangHoa;
-		this.soDangKy = soDangKy;
 		this.nhomHang = nhomHang;
 		this.nuocSanXuat = nuocSanXuat;
 		this.hangSanXuat = hangSanXuat;
-		this.hoatChatChinh = hoatChatChinh;
-		this.hamLuong = hamLuong;
-		this.quyCachDongGoi = quyCachDongGoi;
 		this.moTa = moTa;
 		this.thue = thue;
 		this.maVach = maVach;
@@ -79,6 +76,15 @@ public class HangHoa implements Serializable{
 	public HangHoa() {
 		super();
 	}
+	@Override
+	public String toString() {
+		return "HangHoa [maHangHoa=" + maHangHoa + ", tenHangHoa=" + tenHangHoa + ", nhomHang=" + nhomHang
+				+ ", nuocSanXuat=" + nuocSanXuat + ", hangSanXuat=" + hangSanXuat
+				+ ", moTa=" + moTa + ", thue=" + thue + ", maVach=" + maVach + ", soLuongDinhMuc=" + soLuongDinhMuc
+				+ ", soLuongCanhBao=" + soLuongCanhBao + ", donViTinh=" + donViTinh + ", giaNhap=" + giaNhap
+				+ ", giaBan=" + giaBan + ", nhaCungCap=" + nhaCungCap + ", ngaySanXuat=" + ngaySanXuat + ", hanSuDung="
+				+ hanSuDung + ", trangThaiHangHoa=" + trangThaiHangHoa + "]";
+	}
 	public String getMaHangHoa() {
 		return maHangHoa;
 	}
@@ -90,12 +96,6 @@ public class HangHoa implements Serializable{
 	}
 	public void setTenHangHoa(String tenHangHoa) {
 		this.tenHangHoa = tenHangHoa;
-	}
-	public String getSoDangKy() {
-		return soDangKy;
-	}
-	public void setSoDangKy(String soDangKy) {
-		this.soDangKy = soDangKy;
 	}
 	public NhomHang getNhomHang() {
 		return nhomHang;
@@ -114,24 +114,6 @@ public class HangHoa implements Serializable{
 	}
 	public void setHangSanXuat(String hangSanXuat) {
 		this.hangSanXuat = hangSanXuat;
-	}
-	public String getHoatChatChinh() {
-		return hoatChatChinh;
-	}
-	public void setHoatChatChinh(String hoatChatChinh) {
-		this.hoatChatChinh = hoatChatChinh;
-	}
-	public String getHamLuong() {
-		return hamLuong;
-	}
-	public void setHamLuong(String hamLuong) {
-		this.hamLuong = hamLuong;
-	}
-	public String getQuyCachDongGoi() {
-		return quyCachDongGoi;
-	}
-	public void setQuyCachDongGoi(String quyCachDongGoi) {
-		this.quyCachDongGoi = quyCachDongGoi;
 	}
 	public String getMoTa() {
 		return moTa;
@@ -205,17 +187,8 @@ public class HangHoa implements Serializable{
 	public void setTrangThaiHangHoa(TrangThaiHangHoa trangThaiHangHoa) {
 		this.trangThaiHangHoa = trangThaiHangHoa;
 	}
-	@Override
-	public String toString() {
-		return "HangHoa [maHangHoa=" + maHangHoa + ", tenHangHoa=" + tenHangHoa + ", soDangKy=" + soDangKy
-				+ ", nhomHang=" + nhomHang + ", nuocSanXuat=" + nuocSanXuat + ", hangSanXuat=" + hangSanXuat
-				+ ", hoatChatChinh=" + hoatChatChinh + ", hamLuong=" + hamLuong + ", quyCachDongGoi=" + quyCachDongGoi
-				+ ", moTa=" + moTa + ", thue=" + thue + ", maVach=" + maVach + ", soLuongDinhMuc=" + soLuongDinhMuc
-				+ ", soLuongCanhBao=" + soLuongCanhBao + ", donViTinh=" + donViTinh + ", giaNhap=" + giaNhap
-				+ ", giaBan=" + giaBan + ", nhaCungCap=" + nhaCungCap + ", ngaySanXuat=" + ngaySanXuat + ", hanSuDung="
-				+ hanSuDung + ", trangThaiHangHoa=" + trangThaiHangHoa + "]";
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
-	
-	
 	
 }

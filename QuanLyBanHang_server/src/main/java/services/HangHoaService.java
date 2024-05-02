@@ -7,6 +7,7 @@ import dao.HangHoaDAO;
 import entities.HangHoa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 
 public class HangHoaService implements HangHoaDAO{
 	private EntityManager entityManager;
@@ -17,7 +18,15 @@ public class HangHoaService implements HangHoaDAO{
 	
 	@Override
 	public HangHoa timHangHoaTheoMaHH(String maHH) {
-		return entityManager.find(HangHoa.class, maHH);
+		try {
+	        return entityManager.createQuery(
+	                "SELECT h FROM HangHoa h WHERE h.maHangHoa = :mahh OR h.maVach = :mavach", HangHoa.class)
+	                .setParameter("mahh", maHH)
+	                .setParameter("mavach", maHH)
+	                .getSingleResult();
+	    } catch (NoResultException e) {
+	        return null; // Handle no result found
+	    }
 	}
 	@Override
 	public boolean add(HangHoa hanghoa) {

@@ -7,9 +7,11 @@ import java.net.Socket;
 import java.util.List;
 
 import entities.HangHoa;
+import entities.KhachHang;
 import jakarta.persistence.EntityManager;
 import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
+import services.KhachHangService;
 
 public class Server {
 	public static void main(String[] args) {
@@ -39,6 +41,7 @@ class ClientHandler implements Runnable {
 	private EntityManagerFactoryUtil mangerFactoryUtil;
 	private EntityManager entityManager;
 	private HangHoaService hangHoaService;
+	private KhachHangService khachHangService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -46,7 +49,7 @@ class ClientHandler implements Runnable {
 		this.mangerFactoryUtil = new EntityManagerFactoryUtil();
 		this.entityManager = mangerFactoryUtil.getEntityManager();
 		this.hangHoaService = new HangHoaService(this.entityManager);
-
+		this.khachHangService = new KhachHangService(entityManager);
 	}
 
 	@Override
@@ -65,6 +68,11 @@ class ClientHandler implements Runnable {
 				case "TIM_HANGHOA_THEOMA":
 					HangHoa hangHoa = hangHoaService.timHangHoaTheoMaHH(in.readUTF());
 					out.writeObject(hangHoa);
+					out.flush();
+					break;
+				case "TIM_KHACHHANG_THEOMA":
+					KhachHang khachHang = khachHangService.getKHTheoMaHoacSDT(in.readUTF());
+					out.writeObject(khachHang);
 					out.flush();
 					break;
 				}

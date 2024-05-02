@@ -5,11 +5,16 @@
 package ui;
 
 import components.AddContent;
+import components.ButtonRender;
 import components.FormatJtable;
 import components.GeneratePK;
 import components.LoginInfo;
 import components.ResizeContent;
+import components.SpinnerEditor;
+import components.TableActionCellEditor;
+import components.TableActionEvent;
 import entities.HangHoa;
+import entities.NhanVien;
 import entities.TrangThaiHoaDon;
 import printer.PdfWriterExample;
 import printer.PrintExample;
@@ -39,12 +44,19 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatter;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 
 import org.json.simple.parser.ParseException;
 
@@ -62,10 +74,12 @@ public class BanHang extends javax.swing.JPanel {
     	
         initComponents();
         ResizeContent.resizeContent(this);
-        tbChiTietHoaDon.setModel(tableModel);
-        FormatJtable.setCellEditable(tbChiTietHoaDon);
+        setTable();
+        FormatJtable.setCellEditableForBH(tbChiTietHoaDon);
         phimTat();
         updateTime();
+        inputNumber();
+        txtDiemQuyDoi.setEditable(false);
     }
 
    
@@ -230,6 +244,7 @@ public class BanHang extends javax.swing.JPanel {
         tbChiTietHoaDon.setPreferredSize(new java.awt.Dimension(100, 1000));
         tbChiTietHoaDon.setRequestFocusEnabled(false);
         tbChiTietHoaDon.setRowHeight(40);
+        tbChiTietHoaDon.setSelectionBackground(new java.awt.Color(193, 219, 208));
         jScrollPane1.setViewportView(tbChiTietHoaDon);
 
         pnlLeft.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -633,8 +648,17 @@ public class BanHang extends javax.swing.JPanel {
         // TODO add your handling code here:
     	LocalDateTime now = LocalDateTime.now();
     	entities.HoaDon hd;
+    	try {
+    		double tongTienHang = Double.parseDouble(txtTongTien.getText());
+        	double diemQD = 0;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	
+    	
 		try {
-			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, null, khachHang, 0, 0, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,0,0,0,0);
+			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, 0, 0, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,0,0,0,0);
 			PdfWriterExample.writePdf(tableModel, hd);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -659,11 +683,91 @@ public class BanHang extends javax.swing.JPanel {
 		}
     }//GEN-LAST:event_btnLuuTamActionPerformed
 
+    private boolean ktQuyDoi() {
+    	try { 
+    		double diemQD = Double.parseDouble(txtDiemQuyDoi.getText());
+    		double diemThuong = khachHang.getDiemThuong();
+    		if(diemQD>diemThuong) {
+    			JOptionPane.showMessageDialog(this, "Không đủ điểm!");
+    			txtDiemQuyDoi.setText("");
+    			txtTienGiam.setText("0");
+    			return false;
+    		}else if(diemQD%1000!=0) {
+    			JOptionPane.showMessageDialog(this, "Điểm quy đổi phải chia hết cho 1000!");
+    			txtDiemQuyDoi.setText("");
+    			txtDiemQuyDoi.requestFocus();
+    			txtTienGiam.setText("0");
+    			return false;
+    		}else if(diemQD>Double.parseDouble(txtTongTien.getText())) {
+    			JOptionPane.showMessageDialog(this, "Điểm quy đổi phải nhỏ hơn tổng tiền hàng!");
+    			txtDiemQuyDoi.setText("");
+    			txtDiemQuyDoi.requestFocus();
+    			txtTienGiam.setText("0");
+    			return false;
+    		}else
+    			txtTienGiam.setText(diemQD+"");
+    		updateTienPhaiTra();
+			updateTienThua();
+			return true;
+		} catch (Exception e) {
+			txtDiemQuyDoi.setText("");
+			txtTienGiam.setText("0");
+			updateTienPhaiTra();
+			updateTienThua();
+			return false;
+		}
+    }
     private void txtDiemQuyDoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemQuyDoiActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:khang
+    	ktQuyDoi();
+    	
     }//GEN-LAST:event_txtDiemQuyDoiActionPerformed
 
-    private void txtTienDuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTienDuaActionPerformed
+    private void updateTienThua() {
+		// TODO Auto-generated method stub
+    	try {
+			double tienKD = Double.parseDouble(txtTienDua.getText());
+			double tienPT = Double.parseDouble(txtTienTra.getText());
+			if(tienKD<tienPT) {
+				txtTienThua.setText("0");
+			}else {
+				txtTienThua.setText((tienKD-tienPT)+"");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			
+		}
+		
+	}
+
+
+    public double roundToNearest500(double number) {
+        // Chia số ban đầu cho 500
+    	double quotient = number / 500;
+        // Làm tròn kết quả chia
+    	double roundedQuotient = Math.round(quotient);
+        // Nhân kết quả tròn với 500
+    	double roundedNumber = roundedQuotient * 500;
+        return roundedNumber;
+    }
+
+	private void updateTienPhaiTra() {
+		// TODO Auto-generated method stub
+		double tienHang = 0;
+		try {
+			tienHang = Double.parseDouble(txtTongTien.getText());
+			double tienGiam = Double.parseDouble(txtTienGiam.getText());
+			txtTienTra.setText((roundToNearest500(tienHang-tienGiam))+"");
+		} catch (Exception e) {
+			// TODO: handle exception
+			txtTienTra.setText(roundToNearest500(tienHang)+"");
+		}
+		
+	}
+
+
+
+	private void txtTienDuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTienDuaActionPerformed
         // TODO add your handling code here:
     	
     }//GEN-LAST:event_txtTienDuaActionPerformed
@@ -709,7 +813,7 @@ public class BanHang extends javax.swing.JPanel {
     	if(hangHoa!=null) {
     		dsHH.add(hangHoa);
     		int soLuong = 1;
-        	double giaBan = hangHoa.getThue()*10;
+        	double giaBan = 1000;
         	for(int i=0;i<tableModel.getRowCount();i++) {
         		if(tableModel.getValueAt(i, 0).toString().equalsIgnoreCase(hangHoa.getTenHangHoa())) {
         			soLuong = ((int)tableModel.getValueAt(i, 2))+1;
@@ -755,8 +859,12 @@ public class BanHang extends javax.swing.JPanel {
     		txtSDTKH.setText(khachHang.getSoDienThoai());
     		txtDiemThuong.setText(khachHang.getDiemThuong()+"");
     		timSDTKhachHang1.setText("");
-    	}else
+    		txtDiemQuyDoi.setEditable(true);
+    	}else {
     		JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng tương ứng!");
+    		txtDiemQuyDoi.setEditable(false);
+    	}
+    		
     	
     }//GEN-LAST:event_timSDTKhachHang1ActionPerformed
     
@@ -806,10 +914,64 @@ public class BanHang extends javax.swing.JPanel {
 
         
     }
+    public void setTable() {
+    	
+    	tbChiTietHoaDon.setModel(tableModel);
+    	TableColumn column1 = tbChiTietHoaDon.getColumnModel().getColumn(0);
+        column1.setPreferredWidth(200);
+        TableColumn column5 = tbChiTietHoaDon.getColumnModel().getColumn(5);
+        column5.setPreferredWidth(5);
+    	TableColumn column = tbChiTietHoaDon.getColumnModel().getColumn(2);
+        column.setCellEditor(new SpinnerEditor());
+        TableActionEvent event = new TableActionEvent() {
+			
+			@Override
+			public void onDelete(int row) {
+				if(tbChiTietHoaDon.isEditing()) {
+					tbChiTietHoaDon.getCellEditor().stopCellEditing();
+				}
+				DefaultTableModel model = (DefaultTableModel)tbChiTietHoaDon.getModel();
+				model.removeRow(row);
+				
+			}
+		};
+        tbChiTietHoaDon.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event));
+        tbChiTietHoaDon.getColumnModel().getColumn(5).setCellRenderer(new ButtonRender());
+        
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == 2) {
+                   JOptionPane.showMessageDialog(null, "Số lượng không đủ");
+                   
+                }
+            }	
+        });
+    }
+    public void inputNumber() {
+    	DocumentFilter filter = new DocumentFilter() {
+    	    @Override
+    	    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+    	        if (string.matches("[0-9]+")) {
+    	            super.insertString(fb, offset, string, attr);
+    	        }
+    	    }
+
+    	    @Override
+    	    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+    	        if (text.matches("[0-9]+")) {
+    	            super.replace(fb, offset, length, text, attrs);
+    	        }
+    	    }
+    	};
+    	((PlainDocument) txtDiemQuyDoi.getDocument()).setDocumentFilter(filter);
+    	((PlainDocument) txtTienDua.getDocument()).setDocumentFilter(filter);
+    }
     
     private List<HangHoa> dsHH = new ArrayList<>();
+    private NhanVien nhanVien = LoginInfo.nhanVien;
     private entities.KhachHang khachHang = null;
-    String headerString[] = "Tên sản phẩm;Đơn vị tính;Số lượng;Giá bán;Thành tiền".split(";");
+    String headerString[] = "Tên sản phẩm;Đơn vị tính;Số lượng;Giá bán;Thành tiền; ".split(";");
     private DefaultTableModel tableModel = new DefaultTableModel(headerString,0);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -859,4 +1021,5 @@ public class BanHang extends javax.swing.JPanel {
     private javax.swing.JTextField txtTienTra;
     private javax.swing.JTextField txtTongTien;
     // End of variables declaration//GEN-END:variables
+    
 }

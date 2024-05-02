@@ -16,7 +16,6 @@ public class NhanVien implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String maNhanVien;
 	private String tenNhanVien;
 	private LocalDate ngaySinh;

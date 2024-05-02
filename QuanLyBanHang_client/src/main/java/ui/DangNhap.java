@@ -108,7 +108,7 @@
  */
 package ui;
 import components.LoginInfo;
-import java.awt.Image;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -131,6 +131,8 @@ public class DangNhap extends javax.swing.JFrame {
      */
     public DangNhap() {
         initComponents();
+        Image img = new ImageIcon(getClass().getResource("/icon/logo.jpg")).getImage();
+        setIconImage(img);
         setLocationRelativeTo(null);
 //        myModifyCode();
     }

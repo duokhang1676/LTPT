@@ -26,55 +26,77 @@ public class ChiTietHoaDon implements Serializable{
 	private int soLuong;
 	private double donGia;
 	private String donViTinh;
-	public ChiTietHoaDon(HoaDon hoaDon, HangHoa hangHoa, int soLuong, double donGia, String donViTinh) {
+	private double thanhTien;
+	
+	public ChiTietHoaDon() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ChiTietHoaDon(HoaDon hoaDon, HangHoa hangHoa, int soLuong, double donGia, String donViTinh,
+			double thanhTien) {
 		super();
 		this.hoaDon = hoaDon;
 		this.hangHoa = hangHoa;
 		this.soLuong = soLuong;
 		this.donGia = donGia;
 		this.donViTinh = donViTinh;
+		this.thanhTien = thanhTien;
 	}
-	public ChiTietHoaDon() {
-		super();
-	}
+
 	public HoaDon getHoaDon() {
 		return hoaDon;
 	}
+
 	public void setHoaDon(HoaDon hoaDon) {
 		this.hoaDon = hoaDon;
 	}
+
 	public HangHoa getHangHoa() {
 		return hangHoa;
 	}
+
 	public void setHangHoa(HangHoa hangHoa) {
 		this.hangHoa = hangHoa;
 	}
+
 	public int getSoLuong() {
 		return soLuong;
 	}
+
 	public void setSoLuong(int soLuong) {
 		this.soLuong = soLuong;
 	}
+
 	public double getDonGia() {
 		return donGia;
 	}
+
 	public void setDonGia(double donGia) {
 		this.donGia = donGia;
 	}
+
 	public String getDonViTinh() {
 		return donViTinh;
 	}
+
 	public void setDonViTinh(String donViTinh) {
 		this.donViTinh = donViTinh;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+
+	public double getThanhTien() {
+		return thanhTien;
 	}
+
+	public void setThanhTien(double thanhTien) {
+		this.thanhTien = thanhTien;
+	}
+
 	@Override
 	public String toString() {
 		return "ChiTietHoaDon [hoaDon=" + hoaDon + ", hangHoa=" + hangHoa + ", soLuong=" + soLuong + ", donGia="
-				+ donGia + ", donViTinh=" + donViTinh + "]";
+				+ donGia + ", donViTinh=" + donViTinh + ", thanhTien=" + thanhTien + "]";
 	}
+	
 	
 	
 	

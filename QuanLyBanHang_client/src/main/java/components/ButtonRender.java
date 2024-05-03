@@ -20,10 +20,10 @@ public class ButtonRender  extends DefaultTableCellRenderer{
 			int row, int column) {
 		Component com = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		PanelAction action = new PanelAction();
-		if(isSelected == false && row %5 ==0)
-			action.setBackground(Color.white);
-		else
-			action.setBackground(com.getBackground());
+//		if(isSelected == false && row %5 ==0)
+//			action.setBackground(Color.white);
+//		else
+//			action.setBackground(com.getBackground());
 		return action;
 	}
 }

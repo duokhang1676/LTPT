@@ -6,6 +6,7 @@ package ui;
 
 import components.AddContent;
 import components.ButtonRender;
+import components.ConnectServer;
 import components.FormatJtable;
 import components.GeneratePK;
 import components.LoginInfo;
@@ -14,6 +15,7 @@ import components.SpinnerEditor;
 import components.TableActionCellEditor;
 import components.TableActionEvent;
 import entities.HangHoa;
+import entities.HoaDon;
 import entities.NhanVien;
 import entities.TrangThaiHoaDon;
 import printer.PdfWriterExample;
@@ -488,6 +490,11 @@ public class BanHang extends javax.swing.JPanel {
 
         txtTienTra.setEditable(false);
 
+        txtTienDua.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                txtTienDuaMouseReleased(evt);
+            }
+        });
         txtTienDua.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtTienDuaActionPerformed(evt);
@@ -631,6 +638,7 @@ public class BanHang extends javax.swing.JPanel {
 	}
     private void btnThemHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemHoaDonActionPerformed
         // TODO add your handling code here:
+    	
     }//GEN-LAST:event_btnThemHoaDonActionPerformed
 
     private void btnThemKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemKhachHangActionPerformed
@@ -645,42 +653,137 @@ public class BanHang extends javax.swing.JPanel {
     }//GEN-LAST:event_txtTenKHActionPerformed
 
     private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:khang
     	LocalDateTime now = LocalDateTime.now();
-    	entities.HoaDon hd;
-    	try {
-    		double tongTienHang = Double.parseDouble(txtTongTien.getText());
-        	double diemQD = 0;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+    	entities.HoaDon hd = null;
+    	if(dsHH.size()==0) {
+    		JOptionPane.showMessageDialog(null,"Hóa đơn chưa có sản phẩm!","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+    		return;
+    	}
+    	if(!ktQuyDoi())
+    		return;
+    	if(!ktTienKhachDua())
+    		return;
+    	int diemQuyDoi = 0;
     	
-    	
-    	
+    	if(!txtDiemQuyDoi.getText().equalsIgnoreCase(""))
+    		diemQuyDoi = Integer.parseInt(txtDiemQuyDoi.getText());
+    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+    	String ghiChu = txtGhiChu.getText();
+    	double tongTien = Double.parseDouble(txtTongTien.getText());
+    	double tienKhachDua = Double.parseDouble(txtTienDua.getText());
+    	double tienThua = Double.parseDouble(txtTienThua.getText());
+    	double thanhTien = Double.parseDouble(txtTienTra.getText());
 		try {
-			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, 0, 0, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,0,0,0,0);
+			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, tienKhachDua, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,tongTien,tienThua,thanhTien);
 			PdfWriterExample.writePdf(tableModel, hd);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-
+    	themHoaDon(hd);
+    	updateSoLuong();
+    	if(diemQuyDoi>0)
+    		updateDiemThuong();
+		drop();
     	//PrintExample.printContent();
     	
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
-    private void btnLuuTamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLuuTamActionPerformed
+    private void updateDiemThuong() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	private void updateSoLuong() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	private void themHoaDon(HoaDon hd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	private void drop() {
+		// TODO Auto-generated method stub
+		tableModel.setRowCount(0);
+		dsHH.clear();
+		timSDTKhachHang1.setText("");
+		txtTenKH.setText("");
+		txtSDTKH.setText("");
+		txtDiemThuong.setText("");
+		txtTongTien.setText("");
+		txtDiemQuyDoi.setText("");
+		txtTienGiam.setText("");
+		txtTienTra.setText("");
+		txtTienDua.setText("");
+		txtTienThua.setText("");
+		txtGhiChu.setText("");
+		timMaSP1.setText("");
+		timMaSP1.requestFocus();
+	}
+
+
+
+	private boolean ktTienKhachDua() {
+		// TODO Auto-generated method stub
+    	double tienKhachDua = 0;
+    	try {
+			tienKhachDua = Double.parseDouble(txtTienDua.getText());
+			double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+			if(tienKhachDua<tienPhaiTra) {
+				JOptionPane.showMessageDialog(null,"Tiền khách đưa phải lớn hơn hoặc bằng tiền phải trả!","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+				txtTienDua.requestFocus();
+				updateTienThua();
+				return false;
+			}else {
+				txtTienDua.setText(tienKhachDua+"");
+				updateTienThua();
+				return true;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			JOptionPane.showMessageDialog(null,"Tiền khách đưa phải lớn hơn hoặc bằng tiền phải trả!","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtTienDua.requestFocus();
+			updateTienThua();
+			return false;
+		}
+	}
+
+
+
+	private void btnLuuTamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLuuTamActionPerformed
         // TODO add your handling code here:
-    	LocalDateTime now = LocalDateTime.now();
-    	entities.HoaDon hd;
+		LocalDateTime now = LocalDateTime.now();
+    	entities.HoaDon hd = null;
+    	if(dsHH.size()==0) {
+    		JOptionPane.showMessageDialog(null,"Hóa đơn chưa có sản phẩm!","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+    		return;
+    	}
+    	int diemQuyDoi = 0;
+    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+    	String ghiChu = txtGhiChu.getText();
+    	double tongTien = Double.parseDouble(txtTongTien.getText());
+    	double tienKhachDua = 0;
+    	double tienThua = 0;
+    	double thanhTien = Double.parseDouble(txtTienTra.getText());
 		try {
-			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, null, khachHang, 0, 0, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,0,0,0,0);
-			PdfWriterExample.writePdf(tableModel, hd);
+			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, tienKhachDua, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,tongTien,tienThua,thanhTien);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    	themHoaDon(hd);
+		drop();
+    	
+	
     }//GEN-LAST:event_btnLuuTamActionPerformed
 
     private boolean ktQuyDoi() {
@@ -723,19 +826,24 @@ public class BanHang extends javax.swing.JPanel {
     	
     }//GEN-LAST:event_txtDiemQuyDoiActionPerformed
 
-    private void updateTienThua() {
+    private double updateTienThua() {//Cập nhật tiền thừa
 		// TODO Auto-generated method stub
+    	double tienThua = 0;
     	try {
 			double tienKD = Double.parseDouble(txtTienDua.getText());
 			double tienPT = Double.parseDouble(txtTienTra.getText());
-			if(tienKD<tienPT) {
+			tienThua = tienKD-tienPT;
+			if(tienThua<0) {
 				txtTienThua.setText("0");
+				return 0;
 			}else {
-				txtTienThua.setText((tienKD-tienPT)+"");
+				txtTienThua.setText(tienThua+"");
+				return tienThua;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			
+			txtTienThua.setText(tienThua+"");
+			return tienThua;
 		}
 		
 	}
@@ -751,16 +859,22 @@ public class BanHang extends javax.swing.JPanel {
         return roundedNumber;
     }
 
-	private void updateTienPhaiTra() {
+	private double updateTienPhaiTra() {//Cập nhật lại tiền phải trả
 		// TODO Auto-generated method stub
 		double tienHang = 0;
 		try {
 			tienHang = Double.parseDouble(txtTongTien.getText());
 			double tienGiam = Double.parseDouble(txtTienGiam.getText());
-			txtTienTra.setText((roundToNearest500(tienHang-tienGiam))+"");
+			double tienPhaiTra = tienHang-tienGiam;
+			if(tienPhaiTra<0)
+				tienPhaiTra = 0;
+			else tienPhaiTra = roundToNearest500(tienPhaiTra);//Làm tròn 
+			txtTienTra.setText(tienPhaiTra+"");
+			return tienPhaiTra;
 		} catch (Exception e) {
 			// TODO: handle exception
 			txtTienTra.setText(roundToNearest500(tienHang)+"");
+			return tienHang;
 		}
 		
 	}
@@ -769,7 +883,7 @@ public class BanHang extends javax.swing.JPanel {
 
 	private void txtTienDuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTienDuaActionPerformed
         // TODO add your handling code here:
-    	
+		ktTienKhachDua();
     }//GEN-LAST:event_txtTienDuaActionPerformed
 
     private void txtGhiChuAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_txtGhiChuAncestorAdded
@@ -780,23 +894,38 @@ public class BanHang extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTongTienActionPerformed
 
-    public double reload() {
-    	double tongTien = 0;
-    	for(int i=0;i<tableModel.getRowCount();i++) {
-    		tongTien+=(double)tableModel.getValueAt(i, 4);
-    	}
-    	txtTongTien.setText(tongTien+"");
-    	txtTienTra.setText(tongTien+"");
-    	if(txtTienDua.getText().isEmpty())return tongTien;
-    	double tienThua = Double.parseDouble(txtTienDua.getText())-tongTien;
+    public void reload() {//Hàm cập nhật lại thành tiền của từng cthd, tổng tiền, tiền phải trả, tiền thừa..
+    	double tongTien = capNhatThanhTien(); //thanhtien của tất cả cthd
+    	double tienGiam = 0;
+    	if(!txtTienGiam.getText().equalsIgnoreCase(""))
+    		tienGiam = Double.parseDouble(txtTienGiam.getText());
+    	txtTongTien.setText(tongTien+"");//Cập nhật thành tiền của từng cthd và tổng tiền
+    	double tienPhaiTra = updateTienPhaiTra();
+    	txtTienTra.setText(tienPhaiTra+"");
+    	double tienKhachDua = 0;
+    	if(!txtTienDua.getText().equalsIgnoreCase(""))
+    			tienKhachDua = Double.parseDouble(txtTienDua.getText());
+    	double tienThua = updateTienThua();
     	txtTienThua.setText(tienThua+"");
-    	return tongTien;
     }
     
-    private void timMaSP1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timMaSP1ActionPerformed
-        // TODO add your handling code here:
+    private double capNhatThanhTien() {
+		// TODO Auto-generated method stub
+    	double tongTien = 0;
+    	for(int i=0;i<tableModel.getRowCount();i++) {
+    		double thanhTien = (int)tableModel.getValueAt(i, 2)*(double)tableModel.getValueAt(i, 3);
+    		tableModel.setValueAt(thanhTien, i, 4);
+    		tongTien+=thanhTien;
+    	}
+    	return tongTien;
+	}
+
+
+
+	private void timMaSP1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timMaSP1ActionPerformed
+        // TODO add your handling code here:khang
     	entities.HangHoa hangHoa = null;
-    	try (Socket socket = new Socket("192.168.1.8", 8888)) {
+    	try (Socket socket = new Socket(ip, port)) {
 
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
@@ -810,15 +939,22 @@ public class BanHang extends javax.swing.JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	if(hangHoa!=null) {
-    		dsHH.add(hangHoa);
+    	if(hangHoa!=null) { //Tìm thấy hàng hóa
+    		if(hangHoa.getSoLuongDinhMuc()==0) {//Kiểm tra số lượng
+    			JOptionPane.showMessageDialog(null,"Hàng hóa không đủ số lượng","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+    			timMaSP1.setText("");
+    			timMaSP1.requestFocus();
+    			return;
+    		}	
     		int soLuong = 1;
-        	double giaBan = 1000;
-        	for(int i=0;i<tableModel.getRowCount();i++) {
-        		if(tableModel.getValueAt(i, 0).toString().equalsIgnoreCase(hangHoa.getTenHangHoa())) {
-        			soLuong = ((int)tableModel.getValueAt(i, 2))+1;
-        			tableModel.setValueAt(soLuong, i, 2);
-        			tableModel.setValueAt(soLuong*giaBan, i, 4);
+        	for(int i=0;i<tableModel.getRowCount();i++) {//Kiểm tra hh đã có trong table chưa
+        		if(dsHH.get(i).getMaHangHoa().equalsIgnoreCase(hangHoa.getMaHangHoa())) {//HH đã có trong table
+        			soLuong = ((int)tableModel.getValueAt(i, 2))+1;//Tăng số lượng lên 1
+        			if(soLuong>hangHoa.getSoLuongDinhMuc()) {//Kiểm tra số lượng DM
+        				JOptionPane.showMessageDialog(null,"Hàng hóa không đủ số lượng","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+        				soLuong = hangHoa.getSoLuongDinhMuc();
+        			}
+        			tableModel.setValueAt(soLuong, i, 2);//cập nhật sl
         			reload();
         			
         			timMaSP1.setText("");
@@ -827,11 +963,14 @@ public class BanHang extends javax.swing.JPanel {
         			return;
         		}
         	}
-        	double thanhTien = soLuong*giaBan;
-        	tableModel.addRow(new Object[] {hangHoa.getTenHangHoa(),"Viên", soLuong,giaBan,thanhTien});
+        	//Thêm mới
+        	dsHH.add(hangHoa);//Thêm vào dsHH
+        	double giaBan = hangHoa.getGiaBan();
+        	double thanhTien = soLuong * giaBan;
+        	tableModel.addRow(new Object[] {hangHoa.getTenHangHoa(),hangHoa.getDonViTinh(), soLuong,giaBan,thanhTien});
         	reload();
     	}
-    	else
+    	else//Không tìm thấy HH
     		JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm tương ứng!");
     	timMaSP1.setText("");
 		timMaSP1.requestFocus();
@@ -840,7 +979,7 @@ public class BanHang extends javax.swing.JPanel {
 
     private void timSDTKhachHang1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timSDTKhachHang1ActionPerformed
         // TODO add your handling code here:
-    	try (Socket socket = new Socket("192.168.1.8", 8888)) {
+    	try (Socket socket = new Socket(ip, port)) {
 
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
@@ -862,18 +1001,27 @@ public class BanHang extends javax.swing.JPanel {
     		txtDiemQuyDoi.setEditable(true);
     	}else {
     		JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng tương ứng!");
+    		txtTenKH.setText("");
+    		txtSDTKH.setText("");
+    		txtDiemThuong.setText("");
     		txtDiemQuyDoi.setEditable(false);
     	}
     		
     	
     }//GEN-LAST:event_timSDTKhachHang1ActionPerformed
+
+    private void txtTienDuaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtTienDuaMouseReleased
+        // TODO add your handling code here:
+    
+    }//GEN-LAST:event_txtTienDuaMouseReleased
     
     private void phimTat() {
     	// Tạo một Action và gán chức năng khi nhấn phím 
     	Action action = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-          	  tableModel.removeRow(tbChiTietHoaDon.getSelectedRow());
+          	  if(tbChiTietHoaDon.getSelectedRow()!=-1)
+          		tableModel.removeRow(tbChiTietHoaDon.getSelectedRow());
             }
         };
         Action action2 = new AbstractAction() {
@@ -932,6 +1080,8 @@ public class BanHang extends javax.swing.JPanel {
 				}
 				DefaultTableModel model = (DefaultTableModel)tbChiTietHoaDon.getModel();
 				model.removeRow(row);
+				dsHH.remove(row);
+				reload();
 				
 			}
 		};
@@ -940,10 +1090,16 @@ public class BanHang extends javax.swing.JPanel {
         
         tableModel.addTableModelListener(new TableModelListener() {
             @Override
-            public void tableChanged(TableModelEvent e) {
+            public void tableChanged(TableModelEvent e) {//Bắt sự kiện thay đổi số lượng trên jtable
                 if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == 2) {
-                   JOptionPane.showMessageDialog(null, "Số lượng không đủ");
-                   
+                	int row = tbChiTietHoaDon.getSelectedRow();
+                	if(row==-1)return; //Trường hợp sl thay đổi khi thêm mới 
+                	int soLuong = Integer.parseInt(tbChiTietHoaDon.getValueAt(row, 2).toString());
+                   if(soLuong>dsHH.get(row).getSoLuongDinhMuc()) {//Kiểm tra số lượng
+                	   JOptionPane.showMessageDialog(null,"Hàng hóa không đủ số lượng","Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                	   tbChiTietHoaDon.setValueAt(dsHH.get(row).getSoLuongDinhMuc(), row,2);//Cập nhật số lượng = sl định mức
+                   }
+                   reload();
                 }
             }	
         });
@@ -967,7 +1123,8 @@ public class BanHang extends javax.swing.JPanel {
     	((PlainDocument) txtDiemQuyDoi.getDocument()).setDocumentFilter(filter);
     	((PlainDocument) txtTienDua.getDocument()).setDocumentFilter(filter);
     }
-    
+    private String ip = ConnectServer.ip;
+    private int port = ConnectServer.port;
     private List<HangHoa> dsHH = new ArrayList<>();
     private NhanVien nhanVien = LoginInfo.nhanVien;
     private entities.KhachHang khachHang = null;

@@ -32,7 +32,6 @@ public class HoaDon implements Serializable {
 	private String ghiChu;
 	private TrangThaiHoaDon trangThaiHoaDon;
 	private double tongTien;
-	private double tienKhachDua;
 	private double tienThua;
 	private double thanhTien;
 	
@@ -42,7 +41,7 @@ public class HoaDon implements Serializable {
 
 	public HoaDon(String maHoaDon, LocalDateTime thoiGianLapHoaDon, NhanVien nhanVien, KhachHang khachHang,
 			double tienKhachTra, int diemQuyDoi, String ghiChu, TrangThaiHoaDon trangThaiHoaDon, double tongTien,
-			double tienKhachDua, double tienThua, double thanhTien) {
+			double tienThua, double thanhTien) {
 		super();
 		this.maHoaDon = maHoaDon;
 		this.thoiGianLapHoaDon = thoiGianLapHoaDon;
@@ -53,7 +52,6 @@ public class HoaDon implements Serializable {
 		this.ghiChu = ghiChu;
 		this.trangThaiHoaDon = trangThaiHoaDon;
 		this.tongTien = tongTien;
-		this.tienKhachDua = tienKhachDua;
 		this.tienThua = tienThua;
 		this.thanhTien = thanhTien;
 	}
@@ -130,14 +128,6 @@ public class HoaDon implements Serializable {
 		this.tongTien = tongTien;
 	}
 
-	public double getTienKhachDua() {
-		return tienKhachDua;
-	}
-
-	public void setTienKhachDua(double tienKhachDua) {
-		this.tienKhachDua = tienKhachDua;
-	}
-
 	public double getTienThua() {
 		return tienThua;
 	}
@@ -159,7 +149,7 @@ public class HoaDon implements Serializable {
 		return "HoaDon [maHoaDon=" + maHoaDon + ", thoiGianLapHoaDon=" + thoiGianLapHoaDon + ", nhanVien=" + nhanVien
 				+ ", khachHang=" + khachHang + ", tienKhachTra=" + tienKhachTra + ", diemQuyDoi=" + diemQuyDoi
 				+ ", ghiChu=" + ghiChu + ", trangThaiHoaDon=" + trangThaiHoaDon + ", tongTien=" + tongTien
-				+ ", tienKhachDua=" + tienKhachDua + ", tienThua=" + tienThua + ", thanhTien=" + thanhTien + "]";
+				+  ", tienThua=" + tienThua + ", thanhTien=" + thanhTien + "]";
 	}
 	
 	

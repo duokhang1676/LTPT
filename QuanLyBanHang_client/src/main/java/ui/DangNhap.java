@@ -107,6 +107,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package ui;
+import components.ConnectServer;
 import components.LoginInfo;
 import entities.NhanVien;
 
@@ -347,7 +348,7 @@ public class DangNhap extends javax.swing.JFrame {
 
 	private boolean KiemTraDangNhap() {
 		NhanVien nhanVien = null;
-		try (Socket socket = new Socket("192.168.1.8", 8888)) {
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
 
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());

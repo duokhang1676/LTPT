@@ -72,6 +72,32 @@ public class HangHoa implements Serializable{
 		this.hanSuDung = hanSuDung;
 		this.trangThaiHangHoa = trangThaiHangHoa;
 	}
+	
+	
+	public HangHoa(String tenHangHoa, NhomHang nhomHang, String nuocSanXuat, String hangSanXuat, String moTa,
+			double thue, String maVach, int soLuongDinhMuc, int soLuongCanhBao, String donViTinh, double giaNhap,
+			double giaBan, NhaCungCap nhaCungCap, LocalDate ngaySanXuat, LocalDate hanSuDung,
+			TrangThaiHangHoa trangThaiHangHoa) {
+		super();
+		this.tenHangHoa = tenHangHoa;
+		this.nhomHang = nhomHang;
+		this.nuocSanXuat = nuocSanXuat;
+		this.hangSanXuat = hangSanXuat;
+		this.moTa = moTa;
+		this.thue = thue;
+		this.maVach = maVach;
+		this.soLuongDinhMuc = soLuongDinhMuc;
+		this.soLuongCanhBao = soLuongCanhBao;
+		this.donViTinh = donViTinh;
+		this.giaNhap = giaNhap;
+		this.giaBan = giaBan;
+		this.nhaCungCap = nhaCungCap;
+		this.ngaySanXuat = ngaySanXuat;
+		this.hanSuDung = hanSuDung;
+		this.trangThaiHangHoa = trangThaiHangHoa;
+	}
+
+
 	public HangHoa() {
 		super();
 	}

@@ -32,6 +32,8 @@ public class HangHoaService implements HangHoaDAO{
 	public boolean add(HangHoa hanghoa) {
 		// TODO Auto-generated method stub
 		EntityTransaction trans = entityManager.getTransaction();
+		HangHoa hh = timHangHoaTheoMaHH(hanghoa.getMaHangHoa());
+		if(hh!= null) return false;
 		try {
 			trans.begin();
 			entityManager.persist(hanghoa);
@@ -48,7 +50,7 @@ public class HangHoaService implements HangHoaDAO{
 	@Override
 	public List<HangHoa> getAllHangHoa() {
 		// TODO Auto-generated method stub
-		return entityManager.createNamedQuery("hanghoa.findAll", HangHoa.class).getResultList();
+		return entityManager.createQuery("Select h from HangHoa h", HangHoa.class).getResultList();
 	}
 
 	@Override

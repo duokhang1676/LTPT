@@ -6,10 +6,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "nhomhang")
+@NamedNativeQueries({
+	@NamedNativeQuery(name= "nhomHang.findAll", query = "Select * from NhomHang"),
+	@NamedNativeQuery(name = "nhomHang.findByName", query = "Select * from NhomHang where NhomHang.tenNhomHang = name")
+})
 public class NhomHang implements Serializable{
 	/**
 	 * 
@@ -24,6 +30,12 @@ public class NhomHang implements Serializable{
 		this.maNhomHang = maNhomHang;
 		this.tenNhomHang = tenNhomHang;
 	}
+	
+	public NhomHang(String tenNhomHang) {
+		super();
+		this.tenNhomHang = tenNhomHang;
+	}
+
 	public NhomHang() {
 		super();
 	}

@@ -107,7 +107,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package ui;
+import components.ConnectServer;
 import components.LoginInfo;
+import entities.NhanVien;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -118,7 +120,12 @@ import java.util.concurrent.TimeoutException;
 
 import javax.swing.ImageIcon;
 import java.awt.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -134,6 +141,7 @@ public class DangNhap extends javax.swing.JFrame {
         Image img = new ImageIcon(getClass().getResource("/icon/logo.jpg")).getImage();
         setIconImage(img);
         setLocationRelativeTo(null);
+        txtMatKhau.setText("");
 //        myModifyCode();
     }
 
@@ -151,14 +159,15 @@ public class DangNhap extends javax.swing.JFrame {
         jL_logo = new javax.swing.JLabel();
         jP_wel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jlbThongBao = new javax.swing.JLabel();
         jP_loginArea = new javax.swing.JPanel();
-        txt_matKhau = new javax.swing.JTextField();
         jL_matKhau = new javax.swing.JLabel();
         jL_taiKhoan = new javax.swing.JLabel();
         txt_taiKhoan = new javax.swing.JTextField();
         btn_thoat = new javax.swing.JButton();
         btn_dangNhap = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        txtMatKhau = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -176,7 +185,7 @@ public class DangNhap extends javax.swing.JFrame {
         jL_logo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jL_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/K3TD Pharmacy.png"))); // NOI18N
         jP_logo.add(jL_logo);
-        jL_logo.setBounds(110, 10, 760, 220);
+        jL_logo.setBounds(120, 50, 760, 220);
 
         jP_wel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -184,33 +193,33 @@ public class DangNhap extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Welcome!");
 
+        jlbThongBao.setFont(new java.awt.Font("Times New Roman", 2, 16)); // NOI18N
+        jlbThongBao.setForeground(new java.awt.Color(255, 0, 0));
+        jlbThongBao.setText(" ");
+
         javax.swing.GroupLayout jP_welLayout = new javax.swing.GroupLayout(jP_wel);
         jP_wel.setLayout(jP_welLayout);
         jP_welLayout.setHorizontalGroup(
             jP_welLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jP_welLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(412, 412, 412))
+            .addGroup(jP_welLayout.createSequentialGroup()
+                .addGap(414, 414, 414)
+                .addGroup(jP_welLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jlbThongBao, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jP_welLayout.setVerticalGroup(
             jP_welLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jP_welLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addContainerGap(34, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jlbThongBao, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jP_loginArea.setBackground(new java.awt.Color(255, 255, 255));
         jP_loginArea.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        txt_matKhau.setToolTipText("Mật khẩu ...");
-        txt_matKhau.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_matKhauActionPerformed(evt);
-            }
-        });
-        jP_loginArea.add(txt_matKhau, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 500, 50));
 
         jL_matKhau.setFont(new java.awt.Font("Sitka Text", 1, 24)); // NOI18N
         jL_matKhau.setText("Mật khẩu: ");
@@ -258,6 +267,14 @@ public class DangNhap extends javax.swing.JFrame {
         jLabel2.setText("* By Nhom_02 PhatTrienUngDung DHKHMT17CTT");
         jP_loginArea.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 340, -1, -1));
 
+        txtMatKhau.setText("txtMatKhau");
+        txtMatKhau.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMatKhauActionPerformed(evt);
+            }
+        });
+        jP_loginArea.add(txtMatKhau, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 500, 50));
+
         javax.swing.GroupLayout jP_mainLayout = new javax.swing.GroupLayout(jP_main);
         jP_main.setLayout(jP_mainLayout);
         jP_mainLayout.setHorizontalGroup(
@@ -290,10 +307,6 @@ public class DangNhap extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txt_matKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_matKhauActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_matKhauActionPerformed
-
     private void txt_taiKhoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_taiKhoanActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_taiKhoanActionPerformed
@@ -305,8 +318,11 @@ public class DangNhap extends javax.swing.JFrame {
 
     private void btn_dangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dangNhapActionPerformed
         // TODO add your handling code here
-    	if(!KiemTraDangNhap())
-    		return;
+//    	if(!KiemTraDangNhap()) {
+//    		
+//    		return;
+//    	}
+    		
     	
         this.setVisible(false);
         RootFrame rf =  new RootFrame();
@@ -314,12 +330,54 @@ public class DangNhap extends javax.swing.JFrame {
         rf.setExtendedState(JFrame.MAXIMIZED_BOTH);
         rf.setVisible(true);
     }//GEN-LAST:event_btn_dangNhapActionPerformed
+
+    private void txtMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatKhauActionPerformed
+        // TODO add your handling code here:
+    	if(!KiemTraDangNhap()) {
+    		return;
+    	}
+    		
+        this.setVisible(false);
+        RootFrame rf =  new RootFrame();
+        LoginInfo.addRootframe(rf);
+        rf.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        rf.setVisible(true);
+    }//GEN-LAST:event_txtMatKhauActionPerformed
     
     
 
 	private boolean KiemTraDangNhap() {
-		
-		return true;
+		NhanVien nhanVien = null;
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("TIM_NHANVIEN_THEOMA");
+			out.flush();
+			out.writeUTF(txt_taiKhoan.getText());
+			out.flush();
+			nhanVien = (entities.NhanVien)in.readObject();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(nhanVien!=null) {
+			if(nhanVien.getMatKhau().equalsIgnoreCase(txtMatKhau.getText())) {
+				LoginInfo.setNV(nhanVien);
+				return true;
+			}else {
+				jlbThongBao.setText("Mật khẩu không đúng!");
+				txtMatKhau.requestFocus();
+				return false;
+			}
+				
+		}else {
+			jlbThongBao.setText("Tài khoản không tồn tại!");
+			txt_taiKhoan.requestFocus();
+			return false;
+		}
+			
 	}
 
 	/**
@@ -371,7 +429,8 @@ public class DangNhap extends javax.swing.JFrame {
     private javax.swing.JPanel jP_logo;
     private javax.swing.JPanel jP_main;
     private javax.swing.JPanel jP_wel;
-    private javax.swing.JTextField txt_matKhau;
+    private javax.swing.JLabel jlbThongBao;
+    private javax.swing.JPasswordField txtMatKhau;
     private javax.swing.JTextField txt_taiKhoan;
     // End of variables declaration//GEN-END:variables
 

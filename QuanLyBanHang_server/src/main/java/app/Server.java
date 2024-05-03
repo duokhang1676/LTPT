@@ -8,10 +8,12 @@ import java.util.List;
 
 import entities.HangHoa;
 import entities.KhachHang;
+import entities.NhanVien;
 import jakarta.persistence.EntityManager;
 import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
 import services.KhachHangService;
+import services.NhanVienService;
 
 public class Server {
 	public static void main(String[] args) {
@@ -42,6 +44,7 @@ class ClientHandler implements Runnable {
 	private EntityManager entityManager;
 	private HangHoaService hangHoaService;
 	private KhachHangService khachHangService;
+	private NhanVienService nhanVienService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -50,6 +53,7 @@ class ClientHandler implements Runnable {
 		this.entityManager = mangerFactoryUtil.getEntityManager();
 		this.hangHoaService = new HangHoaService(this.entityManager);
 		this.khachHangService = new KhachHangService(entityManager);
+		this.nhanVienService = new NhanVienService(entityManager);
 	}
 
 	@Override
@@ -73,6 +77,11 @@ class ClientHandler implements Runnable {
 				case "TIM_KHACHHANG_THEOMA":
 					KhachHang khachHang = khachHangService.getKHTheoMaHoacSDT(in.readUTF());
 					out.writeObject(khachHang);
+					out.flush();
+					break;
+				case "TIM_NHANVIEN_THEOMA":
+					NhanVien nhanVien = nhanVienService.timNVTheoMa(in.readUTF());
+					out.writeObject(nhanVien);
 					out.flush();
 					break;
 				}

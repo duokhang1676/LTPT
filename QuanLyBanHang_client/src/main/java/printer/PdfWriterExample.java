@@ -52,7 +52,7 @@ public class PdfWriterExample {
             Paragraph p11 = new Paragraph("Số HD:",fontContent);
             p11.add(Chunk.TABBING);
 
-            p11.add("HD2404300001");
+            p11.add(hd.getMaHoaDon());
             document.add(p11);
             Paragraph p12 = new Paragraph("Ngày:",fontContent);
             p12.add(Chunk.TABBING);
@@ -69,7 +69,9 @@ public class PdfWriterExample {
             document.add(p12);
             Paragraph p13 = new Paragraph("NV:",fontContent);
             p13.add(Chunk.TABBING);
-            p13.add("Võ Dương Khang");
+            if(!(hd.getNhanVien()==null)) {
+            	p13.add(hd.getNhanVien().getTenNhanVien());
+            }
             document.add(p13);
             
             KhachHang kh = hd.getKhachHang();
@@ -124,36 +126,36 @@ public class PdfWriterExample {
             p3.add(Chunk.TABBING);
             p3.add(Chunk.TABBING);
             p3.add(Chunk.TABBING);
-            p3.add("100,000");
+            p3.add(hd.getTongTien()+"");
             document.add(p3);
             Paragraph p4 = new Paragraph("Điểm quy đổi:",fontContent);
             p4.add(Chunk.TABBING);
             p4.add(Chunk.TABBING);
             p4.add(Chunk.TABBING);
-            p4.add("10,000");
+            p4.add(hd.getDiemQuyDoi()+"");
             document.add(p4);
             Paragraph p5 = new Paragraph("Thanh toán (đã làm tròn):",fontHeader2);
             p5.add(Chunk.TABBING);
-            p5.add("90,000");
+            p5.add(hd.getThanhTien()+"");
             document.add(p5);
             document.add(new Paragraph("---------------------------------------------------"));
             Paragraph p6 = new Paragraph("Tiền mặt:",fontContent);
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
-            p6.add("100,000");
+            p6.add(hd.getTienKhachTra()+"");
             document.add(p6);
             Paragraph p7 = new Paragraph("Tiền thối lại:",fontContent);
             p7.add(Chunk.TABBING);
             p7.add(Chunk.TABBING);
             p7.add(Chunk.TABBING);
-            p7.add("10,000");
+            p7.add(hd.getTienThua()+"");
             document.add(p7);
             document.add(new Paragraph("---------------------------------------------------"));
             
             // Tạo mã vạch Code 128
             Barcode128 barcode = new Barcode128();
-            barcode.setCode("HD2404300001"); 
+            barcode.setCode(hd.getMaHoaDon()); 
 
             // Chèn mã vạch vào tài liệu PDF
             com.itextpdf.text.Image image = barcode.createImageWithBarcode(writer.getDirectContent(), null, null);

@@ -506,8 +506,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblHoTen1" alignment="0" pref="578" max="32767" attributes="0"/>
-                          <Component id="txtHoTen1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="lblMa" alignment="0" pref="578" max="32767" attributes="0"/>
+                          <Component id="txtMa" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -517,16 +517,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblHoTen1" max="32767" attributes="0"/>
+                      <Component id="lblMa" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtHoTen1" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="txtMa" min="-2" pref="30" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="lblHoTen1">
+            <Component class="javax.swing.JLabel" name="lblMa">
               <Properties>
                 <Property name="text" type="java.lang.String" value="M&#xe3; nh&#xe2;n vi&#xea;n"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -534,12 +534,12 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtHoTen1">
+            <Component class="javax.swing.JTextField" name="txtMa">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtHoTen1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtMaActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

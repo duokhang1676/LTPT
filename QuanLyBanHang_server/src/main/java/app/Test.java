@@ -11,6 +11,7 @@ import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
 import services.KhachHangService;
 import services.NhomHangService;
+import services.NhanVienService;
 
 public class Test {
 	public static void main(String[] args) {

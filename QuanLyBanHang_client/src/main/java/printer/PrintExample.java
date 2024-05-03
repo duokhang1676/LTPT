@@ -5,8 +5,11 @@ import java.awt.event.ActionListener;
 import java.awt.print.PrinterJob;
 import java.io.File;
 
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -16,7 +19,9 @@ import org.apache.pdfbox.printing.PDFPageable;
 public class PrintExample {
     // Phương thức in nội dung của file PDF
  // Phương thức in nội dung của file PDF mà không hiển thị hộp thoại in
+	
     public static void printContent() {
+    	
         PrinterJob job = PrinterJob.getPrinterJob();
 
         try {
@@ -32,12 +37,14 @@ public class PrintExample {
 
             // In mà không hiển thị hộp thoại in
             job.print();
-
             // Đóng document
             document.close();
+            
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+       
     }
 
 }

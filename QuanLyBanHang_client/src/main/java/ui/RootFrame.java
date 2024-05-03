@@ -6,6 +6,7 @@ package ui;
 
 import components.AddContent;
 import components.ColorSample;
+import components.PnlBanHang;
 import components.ResizeContent;
 import components.StatusMenu;
 
@@ -602,7 +603,18 @@ public class RootFrame extends javax.swing.JFrame {
     }                                           
 
     private void btnBanHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanHangActionPerformed
-    	AddContent.addContent(banHang);
+    	if(PnlBanHang.current == 1)
+    		AddContent.addContent(PnlBanHang.bh1);
+    	else if(PnlBanHang.current == 2)
+    		AddContent.addContent(PnlBanHang.bh2);
+    	else if(PnlBanHang.current == 3)
+    		AddContent.addContent(PnlBanHang.bh3);
+    	else if(PnlBanHang.current == 4)
+    		AddContent.addContent(PnlBanHang.bh4);
+    	else if(PnlBanHang.current == 5)
+    		AddContent.addContent(PnlBanHang.bh5);
+    	else
+    		AddContent.addContent(PnlBanHang.bh6);
     }//GEN-LAST:event_btnBanHangActionPerformed
    
     private void hideAllDropMenu(){
@@ -847,7 +859,7 @@ public class RootFrame extends javax.swing.JFrame {
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Drop3;
     private javax.swing.JPanel Drop5;
@@ -878,6 +890,5 @@ public class RootFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlHeaderMenu;
     private javax.swing.JPanel pnlHeaderTop;
     private javax.swing.JPanel pnlMain;
-    private BanHang banHang = new BanHang();
     // End of variables declaration//GEN-END:variables
 }

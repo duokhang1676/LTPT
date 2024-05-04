@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import components.AddContent;
 import components.ConnectServer;
 import components.StatusMenu;
+import entities.NhomHang;
 import entities.TrangThaiHangHoa;
 
 import java.awt.BorderLayout;
@@ -46,6 +47,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 	private int port = ConnectServer.port;
 	private entities.HangHoa hangHoa;
 	private List<entities.HangHoa> dsHangHoa;
+	private List<NhomHang> dsNhomHang;
 	
 	/**
      * Creates new form HangHoa
@@ -55,26 +57,36 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
         addTableHangHoa();
         loadDataTableHangHoa();
         loadDataNhomHang();
+        loadDataTrangThai();
     }
 
     
-
+	private void loadDataTrangThai() {
+		// TODO Auto-generated method stub
+		for(TrangThaiHangHoa tt : TrangThaiHangHoa.values()) {
+			cb_trangThai.addItem(tt.equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
+		}
+	}
 	
-	
-
-	
-
 	private void loadDataNhomHang() {
 		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_NHOMHANG");
+			out.flush();
+			dsNhomHang = (List<entities.NhomHang>)in.readObject();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		
+		if (dsNhomHang != null) {
+			dsNhomHang.forEach(nh->cb_nhomHang.addItem(nh.getTenNhomHang()));
+		}
 	}
-
-
-
-
-
-
-
 
 	private void loadDataTableHangHoa() {
 		// TODO Auto-generated method stub
@@ -100,6 +112,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 		
 		if (dsHangHoa != null) {
 			int stt = 1;
+			model_hangHoa.setNumRows(0);
 			for (entities.HangHoa hh : dsHangHoa) {
 				model_hangHoa.addRow(new Object[] {stt,hh.getMaHangHoa(), hh.getTenHangHoa(), hh.getNhomHang().getTenNhomHang(),
 						hh.getSoLuongDinhMuc(), hh.getGiaBan(), hh.getTrangThaiHangHoa()});
@@ -290,6 +303,27 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 
     private void btn_timKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_timKiemActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("TIM_HANGHOA_THEOMA_THEOTEN");
+			out.flush();
+			out.writeUTF(txt_timKiem.getText());
+			out.flush();
+			hangHoa = (entities.HangHoa)in.readObject();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	if (hangHoa != null) {
+    		model_hangHoa.setRowCount(0);
+    		model_hangHoa.addRow(new Object[] {1,hangHoa.getMaHangHoa(), hangHoa.getTenHangHoa(), hangHoa.getNhomHang().getTenNhomHang(),
+    				hangHoa.getSoLuongDinhMuc(), hangHoa.getGiaBan(), hangHoa.getTrangThaiHangHoa()});
+		}else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy hàng hóa!");
+		}
     	
     }//GEN-LAST:event_btn_timKiemActionPerformed
 

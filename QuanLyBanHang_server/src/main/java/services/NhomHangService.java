@@ -18,7 +18,7 @@ public class NhomHangService implements NhomHangDAO{
 	@Override
 	public List<NhomHang> getAllNH() {
 		// TODO Auto-generated method stub
-		return entityManager.createNamedQuery("nhomHang.findAll", NhomHang.class).getResultList();
+		return entityManager.createQuery("Select nh from NhomHang nh", NhomHang.class).getResultList();
 	}
 
 	@Override

@@ -9,11 +9,13 @@ import java.util.List;
 import entities.HangHoa;
 import entities.KhachHang;
 import entities.NhanVien;
+import entities.NhomHang;
 import jakarta.persistence.EntityManager;
 import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
 import services.KhachHangService;
 import services.NhanVienService;
+import services.NhomHangService;
 
 public class Server {
 	public static void main(String[] args) {
@@ -45,6 +47,7 @@ class ClientHandler implements Runnable {
 	private HangHoaService hangHoaService;
 	private KhachHangService khachHangService;
 	private NhanVienService nhanVienService;
+	private NhomHangService nhomHangService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -54,6 +57,7 @@ class ClientHandler implements Runnable {
 		this.hangHoaService = new HangHoaService(this.entityManager);
 		this.khachHangService = new KhachHangService(entityManager);
 		this.nhanVienService = new NhanVienService(entityManager);
+		this.nhomHangService = new NhomHangService(entityManager);
 	}
 
 	@Override
@@ -89,6 +93,17 @@ class ClientHandler implements Runnable {
 					out.writeObject(dsHangHoa);
 					out.flush();
 					break;
+				case "GET_DANHSACH_NHOMHANG":
+					List<NhomHang> dsNhomHang = nhomHangService.getAllNH();
+					out.writeObject(dsNhomHang);
+					out.flush();
+					break;
+				case "TIM_HANGHOA_THEOMA_THEOTEN":
+					HangHoa hangHoa1 = hangHoaService.timHangHoaTheoMaHoacTen(in.readUTF());
+					out.writeObject(hangHoa1);
+					out.flush();
+					break;
+
 				}
 			}
 

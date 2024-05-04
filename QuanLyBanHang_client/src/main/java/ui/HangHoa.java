@@ -12,12 +12,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import components.AddContent;
+import components.ConnectServer;
 import components.StatusMenu;
+import entities.TrangThaiHangHoa;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -36,13 +42,19 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 
     private DefaultTableModel model_hangHoa;
     private JTable tbl_hangHoa;
+	private String ip = ConnectServer.ip;
+	private int port = ConnectServer.port;
+	private entities.HangHoa hangHoa;
+	private List<entities.HangHoa> dsHangHoa;
+	
 	/**
      * Creates new form HangHoa
      */
     public HangHoa() {
         initComponents();
         addTableHangHoa();
-        
+        loadDataTableHangHoa();
+        loadDataNhomHang();
     }
 
     
@@ -51,6 +63,58 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 	
 
 	
+
+	private void loadDataNhomHang() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+
+
+
+
+	private void loadDataTableHangHoa() {
+		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_HANGHOA");
+			out.flush();
+			
+//	        List<HangHoa> danhSachHangHoa = (List<HangHoa>) in.readObject();
+	        
+//	        for (HangHoa hangHoa : danhSachHangHoa) {
+//				dsHangHoa.add(hangHoa);
+//			}
+			dsHangHoa = (List<entities.HangHoa>)in.readObject();
+			System.out.println(dsHangHoa);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsHangHoa != null) {
+			int stt = 1;
+			for (entities.HangHoa hh : dsHangHoa) {
+				model_hangHoa.addRow(new Object[] {stt,hh.getMaHangHoa(), hh.getTenHangHoa(), hh.getNhomHang().getTenNhomHang(),
+						hh.getSoLuongDinhMuc(), hh.getGiaBan(), hh.getTrangThaiHangHoa()});
+				
+				stt++;
+			}
+		}
+	}
+
+
+
+
+
+
+
 
 	/**
      * This method is called from within the constructor to initialize the form.
@@ -302,7 +366,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
     // End of variables declaration//GEN-END:variables
 
     private void addTableHangHoa() {
-        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Loại hàng","Số lượng","Thành tiền", "Trạng thái"};
+        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Nhóm hàng","Số lượng","Giá bán","Trạng thái"};
         
         model_hangHoa = new DefaultTableModel(colNames, 0);
         tbl_hangHoa = new JTable(model_hangHoa);

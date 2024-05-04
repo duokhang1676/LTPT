@@ -84,6 +84,11 @@ class ClientHandler implements Runnable {
 					out.writeObject(nhanVien);
 					out.flush();
 					break;
+				case "GET_DANHSACH_HANGHOA":
+					List<HangHoa> dsHangHoa = hangHoaService.getAllHangHoa();
+					out.writeObject(dsHangHoa);
+					out.flush();
+					break;
 				}
 			}
 

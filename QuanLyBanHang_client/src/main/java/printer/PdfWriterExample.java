@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.Barcode128;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import components.Formater;
 import entities.HoaDon;
 import entities.KhachHang;
 import entities.NhanVien;
@@ -84,7 +85,7 @@ public class PdfWriterExample {
                 p15.add(Chunk.TABBING);
                 p15.add(kh.getSoDienThoai());
                 p15.add(Chunk.TABBING);
-                p15.add(kh.getDiemThuong()+" Điểm");
+                p15.add(Formater.decimalFormat(kh.getDiemThuong())+" Điểm");
                 document.add(p15);
             }
             
@@ -126,30 +127,30 @@ public class PdfWriterExample {
             p3.add(Chunk.TABBING);
             p3.add(Chunk.TABBING);
             p3.add(Chunk.TABBING);
-            p3.add(hd.getTongTien()+"");
+            p3.add(Formater.decimalFormat(hd.getTongTien()));
             document.add(p3);
             Paragraph p4 = new Paragraph("Điểm quy đổi:",fontContent);
             p4.add(Chunk.TABBING);
             p4.add(Chunk.TABBING);
             p4.add(Chunk.TABBING);
-            p4.add(hd.getDiemQuyDoi()+"");
+            p4.add(Formater.decimalFormat(hd.getDiemQuyDoi()));
             document.add(p4);
             Paragraph p5 = new Paragraph("Thanh toán (đã làm tròn):",fontHeader2);
             p5.add(Chunk.TABBING);
-            p5.add(hd.getThanhTien()+"");
+            p5.add(Formater.decimalFormat(hd.getThanhTien()));
             document.add(p5);
             document.add(new Paragraph("---------------------------------------------------"));
             Paragraph p6 = new Paragraph("Tiền mặt:",fontContent);
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
-            p6.add(hd.getTienKhachDua()+"");
+            p6.add(Formater.decimalFormat(hd.getTienKhachDua()));
             document.add(p6);
             Paragraph p7 = new Paragraph("Tiền thối lại:",fontContent);
             p7.add(Chunk.TABBING);
             p7.add(Chunk.TABBING);
             p7.add(Chunk.TABBING);
-            p7.add(hd.getTienThua()+"");
+            p7.add(Formater.decimalFormat(hd.getTienThua()));
             document.add(p7);
             document.add(new Paragraph("---------------------------------------------------"));
             

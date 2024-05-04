@@ -52,9 +52,20 @@ public class HangHoaService implements HangHoaDAO{
 	}
 
 	@Override
-	public boolean capNhatSoLuongHH(String maHH, int soLuong) {
+	public boolean updateHH(HangHoa hh) {
 		// TODO Auto-generated method stub khang capNhatSoLuongKhiTaoHD
-		
+		EntityTransaction trans = entityManager.getTransaction();
+		try {
+			trans.begin();
+			entityManager.merge(hh);
+			trans.commit();
+			return true;
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		}
 		return false;
 	}
 }

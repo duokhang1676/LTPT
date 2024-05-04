@@ -13,6 +13,5 @@ public class Test {
 		Persistence.createEntityManagerFactory("QLBH_server");
 		EntityManagerFactoryUtil managerEntityUtil = new EntityManagerFactoryUtil();
 		EntityManager entityManager = managerEntityUtil.getEntityManager();
-		
 	}
 }

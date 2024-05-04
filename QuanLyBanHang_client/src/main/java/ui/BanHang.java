@@ -8,8 +8,10 @@ import components.AddContent;
 import components.ButtonRender;
 import components.ConnectServer;
 import components.FormatJtable;
+import components.Formater;
 import components.GeneratePK;
 import components.LoginInfo;
+import components.NumberFilter;
 import components.PnlBanHang;
 import components.ResizeContent;
 import components.SpinnerEditor;
@@ -26,6 +28,7 @@ import printer.PrintExample;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -59,6 +62,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatter;
@@ -101,6 +105,22 @@ public class BanHang extends javax.swing.JPanel {
 		pnl5.setVisible(false);
 		pnl6.setVisible(false);
 		lblSpace.setPreferredSize(new Dimension(lblSpace.getWidth()+155*5,lblSpace.getHeight()));
+		
+		Font fontB = new Font("Arial", Font.BOLD, 14);
+		Font font = new Font("Arial", Font.PLAIN, 14);
+		txtTienTra.setFont(fontB);
+		txtTenKH.setFont(fontB);
+		txtSDTKH.setFont(font);
+		txtDiemThuong.setFont(font);
+		txtTongTien.setFont(fontB);
+		txtDiemQuyDoi.setFont(font);
+		txtTienGiam.setFont(font);
+		txtTienDua.setFont(font);
+		txtTienThua.setFont(fontB);
+		txtGhiChu.setFont(font);
+        ((AbstractDocument) txtDiemThuong.getDocument()).setDocumentFilter(new NumberFilter());
+        ((AbstractDocument) txtDiemQuyDoi.getDocument()).setDocumentFilter(new NumberFilter());
+        ((AbstractDocument) txtTienDua.getDocument()).setDocumentFilter(new NumberFilter());
 	}
 
 
@@ -933,14 +953,14 @@ public class BanHang extends javax.swing.JPanel {
     		return;
     	int diemQuyDoi = 0;
     	
-    	if(!txtDiemQuyDoi.getText().equalsIgnoreCase(""))
-    		diemQuyDoi = Integer.parseInt(txtDiemQuyDoi.getText());
-    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+    	if(!txtDiemQuyDoi.getText().replaceAll(",", "").equalsIgnoreCase(""))
+    		diemQuyDoi = Integer.parseInt(txtDiemQuyDoi.getText().replaceAll(",", ""));
+    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
     	String ghiChu = txtGhiChu.getText();
-    	double tongTien = Double.parseDouble(txtTongTien.getText());
-    	double tienKhachDua = Double.parseDouble(txtTienDua.getText());
-    	double tienThua = Double.parseDouble(txtTienThua.getText());
-    	double thanhTien = Double.parseDouble(txtTienTra.getText());
+    	double tongTien = Double.parseDouble(txtTongTien.getText().replaceAll(",", ""));
+    	double tienKhachDua = Double.parseDouble(txtTienDua.getText().replaceAll(",", ""));
+    	double tienThua = Double.parseDouble(txtTienThua.getText().replaceAll(",", ""));
+    	double thanhTien = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
 		try {
 			hd = new  HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,tongTien,tienKhachDua,tienThua,thanhTien);
 			PdfWriterExample.writePdf(tableModel, hd);
@@ -949,40 +969,81 @@ public class BanHang extends javax.swing.JPanel {
 			e.printStackTrace();
 		}
     	themHoaDon(hd);
-//    	for(int i =0;i<dsHH.size();i++) {
-//    		int soLuong = (int)tbChiTietHoaDon.getValueAt(i, 2);
-//    		String donViTinh = tbChiTietHoaDon.getValueAt(i, 1).toString();
-//    		double donGia =  (double)tbChiTietHoaDon.getValueAt(i, 3);
-//    		double thanhTienCTHD = (double)tbChiTietHoaDon.getValueAt(i, 4);
-//    		ChiTietHoaDon cthd = new ChiTietHoaDon(hd, dsHH.get(i), soLuong, donGia, donViTinh, thanhTienCTHD);
-//    		themCTHD(cthd);
-//    		updateSoLuong(dsHH.get(i).getMaHangHoa(), soLuong);
-//    	}
-//    	int diemCong = (int)(hd.getThanhTien()/100);
-//    	updateDiemThuong(diemQuyDoi, diemCong);
+    	for(int i =0;i<dsHH.size();i++) {
+    		HangHoa hh = dsHH.get(i);
+    		int soLuong = (int)tbChiTietHoaDon.getValueAt(i, 2);
+    		hh.setSoLuongDinhMuc(hh.getSoLuongDinhMuc()-soLuong);
+    		String donViTinh = tbChiTietHoaDon.getValueAt(i, 1).toString();
+    		String donGia =  tbChiTietHoaDon.getValueAt(i, 3).toString().replaceAll(",", "");
+    		double donGiaD = Double.parseDouble(donGia);
+    		String thanhTienCTHDS = tbChiTietHoaDon.getValueAt(i, 4).toString().replaceAll(",", "");
+    		double thanhTienCTHD = Double.parseDouble(thanhTienCTHDS);
+    		ChiTietHoaDon cthd = new ChiTietHoaDon(hd, hh, soLuong, donGiaD, donViTinh, thanhTienCTHD);
+    		themCTHD(cthd);
+    		updateHangHoa(hh);
+    	}
+    	
+    	if(khachHang!=null) {
+    		int diemThuong = khachHang.getDiemThuong()+(int)(hd.getThanhTien()/100)-diemQuyDoi;
+        	khachHang.setDiemThuong(diemThuong);
+        	updateKhachHang(khachHang);
+    	}
 		drop();
-    	//PrintExample.printContent();112
+    	//PrintExample.printContent();
     	
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
     private void themCTHD(ChiTietHoaDon cthd) {
 		// TODO Auto-generated method stub
-    	
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("THEM_CTHD");
+			out.flush();
+			out.writeObject(cthd);
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
 
 
-	private void updateDiemThuong(int diemDung,int diemCong) {
+	private void updateKhachHang(entities.KhachHang kh) {
 		// TODO Auto-generated method stub112
-		
+		try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("CAPNHAT_KHACHHANG");
+			out.flush();
+			out.writeObject(kh);
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
 
-	private void updateSoLuong(String maHH, int soLuong) {
+	private void updateHangHoa(HangHoa hh) {
 		// TODO Auto-generated method stub112
-		
+		try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("CAPNHAT_HANGHOA");
+			out.flush();
+			out.writeObject(hh);
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -1031,16 +1092,18 @@ public class BanHang extends javax.swing.JPanel {
 	private boolean ktTienKhachDua() {
 		// TODO Auto-generated method stub
     	double tienKhachDua = 0;
+    	if(txtTienTra.getText().equalsIgnoreCase(""))
+    		return false;
     	try {
-			tienKhachDua = Double.parseDouble(txtTienDua.getText());
-			double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+			tienKhachDua = Double.parseDouble(txtTienDua.getText().replaceAll(",", ""));
+			double tienPhaiTra = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
 			if(tienKhachDua<tienPhaiTra) {
 				JOptionPane.showMessageDialog(null,"Tiền khách đưa phải lớn hơn hoặc bằng tiền phải trả!","Cảnh báo", JOptionPane.WARNING_MESSAGE);
 				txtTienDua.requestFocus();
 				updateTienThua();
 				return false;
 			}else {
-				txtTienDua.setText(tienKhachDua+"");
+				txtTienDua.setText(Formater.decimalFormat(tienKhachDua));
 				updateTienThua();
 				return true;
 			}
@@ -1064,29 +1127,45 @@ public class BanHang extends javax.swing.JPanel {
     		return;
     	}
     	int diemQuyDoi = 0;
-    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText());
+    	
+    	double tienPhaiTra = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
     	String ghiChu = txtGhiChu.getText();
-    	double tongTien = Double.parseDouble(txtTongTien.getText());
+    	double tongTien = Double.parseDouble(txtTongTien.getText().replaceAll(",", ""));
     	double tienKhachDua = 0;
     	double tienThua = 0;
-    	double thanhTien = Double.parseDouble(txtTienTra.getText());
+    	double thanhTien = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
 		try {
-			hd = new HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, 0, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,tongTien,0,0,thanhTien);
+			hd = new  HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, 0, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,tongTien,0,0,tongTien);
+			PdfWriterExample.writePdf(tableModel, hd);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	themHoaDon(hd);
+    	for(int i =0;i<dsHH.size();i++) {
+    		HangHoa hh = dsHH.get(i);
+    		int soLuong = (int)tbChiTietHoaDon.getValueAt(i, 2);
+    		hh.setSoLuongDinhMuc(hh.getSoLuongDinhMuc()-soLuong);
+    		String donViTinh = tbChiTietHoaDon.getValueAt(i, 1).toString();
+    		String donGia =  tbChiTietHoaDon.getValueAt(i, 3).toString().replaceAll(",", "");
+    		double donGiaD = Double.parseDouble(donGia);
+    		String thanhTienCTHDS = tbChiTietHoaDon.getValueAt(i, 4).toString().replaceAll(",", "");
+    		double thanhTienCTHD = Double.parseDouble(thanhTienCTHDS);
+    		ChiTietHoaDon cthd = new ChiTietHoaDon(hd, hh, soLuong, donGiaD, donViTinh, thanhTienCTHD);
+    		themCTHD(cthd);
+    		updateHangHoa(hh);
+    	}
+    	
 		drop();
     	
 	
     }//GEN-LAST:event_btnLuuTamActionPerformed
 
     private boolean ktQuyDoi() {
-    	if(txtDiemQuyDoi.getText().equalsIgnoreCase(""))
+    	if(txtDiemQuyDoi.getText().replaceAll(",", "").equalsIgnoreCase(""))
     		return true;
     	try { 
-    		double diemQD = Double.parseDouble(txtDiemQuyDoi.getText());
+    		double diemQD = Double.parseDouble(txtDiemQuyDoi.getText().replaceAll(",", ""));
     		double diemThuong = khachHang.getDiemThuong();
     		if(diemQD>diemThuong) {
     			JOptionPane.showMessageDialog(this, "Không đủ điểm!");
@@ -1099,14 +1178,14 @@ public class BanHang extends javax.swing.JPanel {
     			txtDiemQuyDoi.requestFocus();
     			txtTienGiam.setText("0");
     			return false;
-    		}else if(diemQD>Double.parseDouble(txtTongTien.getText())) {
+    		}else if(diemQD>Double.parseDouble(txtTongTien.getText().replaceAll(",", ""))) {
     			JOptionPane.showMessageDialog(this, "Điểm quy đổi phải nhỏ hơn tổng tiền hàng!");
     			txtDiemQuyDoi.setText("");
     			txtDiemQuyDoi.requestFocus();
     			txtTienGiam.setText("0");
     			return false;
     		}else
-    			txtTienGiam.setText(diemQD+"");
+    			txtTienGiam.setText(Formater.decimalFormat(diemQD));
     		updateTienPhaiTra();
 			updateTienThua();
 			return true;
@@ -1128,19 +1207,19 @@ public class BanHang extends javax.swing.JPanel {
 		// TODO Auto-generated method stub
     	double tienThua = 0;
     	try {
-			double tienKD = Double.parseDouble(txtTienDua.getText());
-			double tienPT = Double.parseDouble(txtTienTra.getText());
+			double tienKD = Double.parseDouble(txtTienDua.getText().replaceAll(",", ""));
+			double tienPT = Double.parseDouble(txtTienTra.getText().replaceAll(",", ""));
 			tienThua = tienKD-tienPT;
 			if(tienThua<0) {
 				txtTienThua.setText("0");
 				return 0;
 			}else {
-				txtTienThua.setText(tienThua+"");
+				txtTienThua.setText(Formater.decimalFormat(tienThua));
 				return tienThua;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			txtTienThua.setText(tienThua+"");
+			txtTienThua.setText(Formater.decimalFormat(tienThua));
 			return tienThua;
 		}
 		
@@ -1161,17 +1240,17 @@ public class BanHang extends javax.swing.JPanel {
 		// TODO Auto-generated method stub
 		double tienHang = 0;
 		try {
-			tienHang = Double.parseDouble(txtTongTien.getText());
-			double tienGiam = Double.parseDouble(txtTienGiam.getText());
+			tienHang = Double.parseDouble(txtTongTien.getText().replaceAll(",", ""));
+			double tienGiam = Double.parseDouble(txtTienGiam.getText().replaceAll(",", ""));
 			double tienPhaiTra = tienHang-tienGiam;
 			if(tienPhaiTra<0)
 				tienPhaiTra = 0;
 			else tienPhaiTra = roundToNearest500(tienPhaiTra);//Làm tròn 
-			txtTienTra.setText(tienPhaiTra+"");
+			txtTienTra.setText(Formater.decimalFormat(tienPhaiTra));
 			return tienPhaiTra;
 		} catch (Exception e) {
 			// TODO: handle exception
-			txtTienTra.setText(roundToNearest500(tienHang)+"");
+			txtTienTra.setText(Formater.decimalFormat(roundToNearest500(tienHang)));
 			return tienHang;
 		}
 		
@@ -1182,6 +1261,7 @@ public class BanHang extends javax.swing.JPanel {
 	private void txtTienDuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTienDuaActionPerformed
         // TODO add your handling code here:
 		ktTienKhachDua();
+		//System.out.println(Double.parseDouble(txtTienDua.getText().replaceAll(",", "")));
     }//GEN-LAST:event_txtTienDuaActionPerformed
 
     private void txtGhiChuAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_txtGhiChuAncestorAdded
@@ -1195,24 +1275,25 @@ public class BanHang extends javax.swing.JPanel {
     public void reload() {//Hàm cập nhật lại thành tiền của từng cthd, tổng tiền, tiền phải trả, tiền thừa..
     	double tongTien = capNhatThanhTien(); //thanhtien của tất cả cthd
     	double tienGiam = 0;
-    	if(!txtTienGiam.getText().equalsIgnoreCase(""))
-    		tienGiam = Double.parseDouble(txtTienGiam.getText());
-    	txtTongTien.setText(tongTien+"");//Cập nhật thành tiền của từng cthd và tổng tiền
+    	if(!txtTienGiam.getText().replaceAll(",", "").equalsIgnoreCase(""))
+    		tienGiam = Double.parseDouble(txtTienGiam.getText().replaceAll(",", ""));
+    	txtTongTien.setText(Formater.decimalFormat(tongTien));//Cập nhật thành tiền của từng cthd và tổng tiền
     	double tienPhaiTra = updateTienPhaiTra();
-    	txtTienTra.setText(tienPhaiTra+"");
+    	txtTienTra.setText(Formater.decimalFormat(tienPhaiTra));
     	double tienKhachDua = 0;
-    	if(!txtTienDua.getText().equalsIgnoreCase(""))
-    			tienKhachDua = Double.parseDouble(txtTienDua.getText());
+    	if(!txtTienDua.getText().replaceAll(",", "").equalsIgnoreCase(""))
+    			tienKhachDua = Double.parseDouble(txtTienDua.getText().replaceAll(",", ""));
     	double tienThua = updateTienThua();
-    	txtTienThua.setText(tienThua+"");
+    	txtTienThua.setText(Formater.decimalFormat(tienThua));
     }
     
     private double capNhatThanhTien() {
 		// TODO Auto-generated method stub
     	double tongTien = 0;
     	for(int i=0;i<tableModel.getRowCount();i++) {
-    		double thanhTien = (int)tableModel.getValueAt(i, 2)*(double)tableModel.getValueAt(i, 3);
-    		tableModel.setValueAt(thanhTien, i, 4);
+    		String thanhTienS = tableModel.getValueAt(i, 3).toString().replaceAll(",", "");
+    		double thanhTien = (int)tableModel.getValueAt(i, 2)*Double.parseDouble(thanhTienS);
+    		tableModel.setValueAt(Formater.decimalFormat(thanhTien), i, 4);
     		tongTien+=thanhTien;
     	}
     	return tongTien;
@@ -1265,7 +1346,7 @@ public class BanHang extends javax.swing.JPanel {
         	dsHH.add(hangHoa);//Thêm vào dsHH
         	double giaBan = hangHoa.getGiaBan();
         	double thanhTien = soLuong * giaBan;
-        	tableModel.addRow(new Object[] {hangHoa.getTenHangHoa(),hangHoa.getDonViTinh(), soLuong,giaBan,thanhTien});
+        	tableModel.addRow(new Object[] {hangHoa.getTenHangHoa(),hangHoa.getDonViTinh(), soLuong,Formater.decimalFormat(giaBan),Formater.decimalFormat(thanhTien)});
         	reload();
     	}
     	else//Không tìm thấy HH
@@ -1558,14 +1639,14 @@ public class BanHang extends javax.swing.JPanel {
     	DocumentFilter filter = new DocumentFilter() {
     	    @Override
     	    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-    	        if (string.matches("[0-9]+")) {
+    	        if (string.matches("[0-9]*")) {
     	            super.insertString(fb, offset, string, attr);
     	        }
     	    }
 
     	    @Override
     	    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-    	        if (text.matches("[0-9]+")) {
+    	        if (text.matches("[0-9]*")) {
     	            super.replace(fb, offset, length, text, attrs);
     	        }
     	    }

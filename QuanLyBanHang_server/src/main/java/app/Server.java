@@ -98,16 +98,13 @@ class ClientHandler implements Runnable {
 					out.flush();
 					break;
 				case "THEM_CTHD":
-					out.writeObject(chiTietHoaDonService.themCTHD((ChiTietHoaDon)in.readObject()));
-					out.flush();
+					chiTietHoaDonService.themCTHD((ChiTietHoaDon)in.readObject());
 					break;
-				case "CAPNHAT_SOLUONG_HH":
-					out.writeObject(hangHoaService.capNhatSoLuongHH(in.readUTF(), in.readInt()));
-					out.flush();
+				case "CAPNHAT_HANGHOA":
+					hangHoaService.updateHH((HangHoa)in.readObject());
 					break;
-				case "CAPNHAT_DIEMTHUONG":
-					out.writeObject(khachHangService.capNhatDiemThuong(in.readUTF(), in.readInt()));
-					out.flush();
+				case "CAPNHAT_KHACHHANG":
+					khachHangService.updateKH((KhachHang)in.readObject());
 					break;
 				}
 			}

@@ -9,5 +9,5 @@ public interface HangHoaDAO {
 	public HangHoa timHangHoaTheoMaHH(String maHH);
 	public boolean add(HangHoa hanghoa);
 	public List<HangHoa> getAllHangHoa();
-	public boolean capNhatSoLuongHH(String maHH, int soLuong);
+	public boolean updateHH(HangHoa hh);
 }

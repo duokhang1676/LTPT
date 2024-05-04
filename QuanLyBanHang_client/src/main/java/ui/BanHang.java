@@ -15,6 +15,7 @@ import components.ResizeContent;
 import components.SpinnerEditor;
 import components.TableActionCellEditor;
 import components.TableActionEvent;
+import entities.ChiTietHoaDon;
 import entities.HangHoa;
 import entities.HoaDon;
 import entities.NhanVien;
@@ -941,29 +942,45 @@ public class BanHang extends javax.swing.JPanel {
     	double tienThua = Double.parseDouble(txtTienThua.getText());
     	double thanhTien = Double.parseDouble(txtTienTra.getText());
 		try {
-			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, tienKhachDua, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,tongTien,tienThua,thanhTien);
+			hd = new  HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.HOAN_THANH,tongTien,tienKhachDua,tienThua,thanhTien);
 			PdfWriterExample.writePdf(tableModel, hd);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	themHoaDon(hd);
-    	updateSoLuong();
-    	if(diemQuyDoi>0)
-    		updateDiemThuong();
+//    	for(int i =0;i<dsHH.size();i++) {
+//    		int soLuong = (int)tbChiTietHoaDon.getValueAt(i, 2);
+//    		String donViTinh = tbChiTietHoaDon.getValueAt(i, 1).toString();
+//    		double donGia =  (double)tbChiTietHoaDon.getValueAt(i, 3);
+//    		double thanhTienCTHD = (double)tbChiTietHoaDon.getValueAt(i, 4);
+//    		ChiTietHoaDon cthd = new ChiTietHoaDon(hd, dsHH.get(i), soLuong, donGia, donViTinh, thanhTienCTHD);
+//    		themCTHD(cthd);
+//    		updateSoLuong(dsHH.get(i).getMaHangHoa(), soLuong);
+//    	}
+//    	int diemCong = (int)(hd.getThanhTien()/100);
+//    	updateDiemThuong(diemQuyDoi, diemCong);
 		drop();
     	//PrintExample.printContent();112
     	
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
-    private void updateDiemThuong() {
+    private void themCTHD(ChiTietHoaDon cthd) {
+		// TODO Auto-generated method stub
+    	
+		
+	}
+
+
+
+	private void updateDiemThuong(int diemDung,int diemCong) {
 		// TODO Auto-generated method stub112
 		
 	}
 
 
 
-	private void updateSoLuong() {
+	private void updateSoLuong(String maHH, int soLuong) {
 		// TODO Auto-generated method stub112
 		
 	}
@@ -972,7 +989,20 @@ public class BanHang extends javax.swing.JPanel {
 
 	private void themHoaDon(HoaDon hd) {
 		// TODO Auto-generated method stub112
-		
+		try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("THEM_HOADON");
+			out.flush();
+			out.writeObject(hd);
+			out.flush();
+			if(!in.readBoolean())
+				System.out.println("Server: them HD that bai!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -1041,7 +1071,7 @@ public class BanHang extends javax.swing.JPanel {
     	double tienThua = 0;
     	double thanhTien = Double.parseDouble(txtTienTra.getText());
 		try {
-			hd = new entities.HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, tienKhachDua, diemQuyDoi, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,tongTien,tienThua,thanhTien);
+			hd = new HoaDon(GeneratePK.getMaHD(), now, nhanVien, khachHang, 0, txtGhiChu.getText(), TrangThaiHoaDon.THEM_TAM,tongTien,0,0,thanhTien);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1053,6 +1083,8 @@ public class BanHang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnLuuTamActionPerformed
 
     private boolean ktQuyDoi() {
+    	if(txtDiemQuyDoi.getText().equalsIgnoreCase(""))
+    		return true;
     	try { 
     		double diemQD = Double.parseDouble(txtDiemQuyDoi.getText());
     		double diemThuong = khachHang.getDiemThuong();

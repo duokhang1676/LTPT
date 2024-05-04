@@ -11,4 +11,5 @@ public interface HangHoaDAO {
 	public boolean add(HangHoa hanghoa);
 	public List<HangHoa> getAllHangHoa();
 	public List<HangHoa> getHangHoaByID();
+	public boolean capNhatSoLuongHH(String maHH, int soLuong);
 }

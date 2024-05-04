@@ -9,7 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
 public class KhachHangService implements KhachHangDAO{
-private EntityManager entityManager;
+	private EntityManager entityManager;
 	
 	public KhachHangService(EntityManager entityManager) {
 		this.entityManager = entityManager;
@@ -35,6 +35,10 @@ private EntityManager entityManager;
 	public List<KhachHang> getAllKH() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public boolean capNhatDiemThuong(String maKH, int diemThuong) {
+		// TODO Auto-generated method stub khang cap nhat diem thuong khi tao hd
+		return false;
 	}
 	
 }

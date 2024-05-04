@@ -66,4 +66,11 @@ public class HangHoaService implements HangHoaDAO{
 				.setParameter("name", maTenHH)
 				.getSingleResult();
 	}
+
+	@Override
+	public boolean capNhatSoLuongHH(String maHH, int soLuong) {
+		// TODO Auto-generated method stub khang capNhatSoLuongKhiTaoHD
+		
+		return false;
+	}
 }

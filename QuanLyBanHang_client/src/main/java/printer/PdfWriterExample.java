@@ -143,7 +143,7 @@ public class PdfWriterExample {
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
             p6.add(Chunk.TABBING);
-            p6.add(hd.getTienKhachTra()+"");
+            p6.add(hd.getTienKhachDua()+"");
             document.add(p6);
             Paragraph p7 = new Paragraph("Tiền thối lại:",fontContent);
             p7.add(Chunk.TABBING);

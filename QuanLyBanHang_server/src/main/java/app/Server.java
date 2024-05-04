@@ -6,13 +6,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
+import entities.ChiTietHoaDon;
 import entities.HangHoa;
+import entities.HoaDon;
 import entities.KhachHang;
 import entities.NhanVien;
 import entities.NhomHang;
 import jakarta.persistence.EntityManager;
+import services.ChiTietHoaDonService;
 import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
+import services.HoaDonService;
 import services.KhachHangService;
 import services.NhanVienService;
 import services.NhomHangService;
@@ -48,6 +52,8 @@ class ClientHandler implements Runnable {
 	private KhachHangService khachHangService;
 	private NhanVienService nhanVienService;
 	private NhomHangService nhomHangService;
+	private HoaDonService hoaDonService;
+	private ChiTietHoaDonService chiTietHoaDonService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -58,6 +64,8 @@ class ClientHandler implements Runnable {
 		this.khachHangService = new KhachHangService(entityManager);
 		this.nhanVienService = new NhanVienService(entityManager);
 		this.nhomHangService = new NhomHangService(entityManager);
+		this.hoaDonService = new HoaDonService(entityManager);
+		this.chiTietHoaDonService = new ChiTietHoaDonService(entityManager);
 	}
 
 	@Override
@@ -104,6 +112,23 @@ class ClientHandler implements Runnable {
 					out.flush();
 					break;
 
+				case "THEM_HOADON":
+					boolean temp = hoaDonService.themHoaDon((HoaDon)in.readObject());
+					out.writeBoolean(temp);
+					out.flush();
+					break;
+				case "THEM_CTHD":
+					out.writeObject(chiTietHoaDonService.themCTHD((ChiTietHoaDon)in.readObject()));
+					out.flush();
+					break;
+				case "CAPNHAT_SOLUONG_HH":
+					out.writeObject(hangHoaService.capNhatSoLuongHH(in.readUTF(), in.readInt()));
+					out.flush();
+					break;
+				case "CAPNHAT_DIEMTHUONG":
+					out.writeObject(khachHangService.capNhatDiemThuong(in.readUTF(), in.readInt()));
+					out.flush();
+					break;
 				}
 			}
 

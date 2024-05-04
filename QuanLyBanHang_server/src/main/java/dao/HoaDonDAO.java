@@ -1,5 +1,7 @@
 package dao;
 
-public interface HoaDonDAO {
+import entities.HoaDon;
 
+public interface HoaDonDAO {
+	public boolean themHoaDon(HoaDon hd);
 }

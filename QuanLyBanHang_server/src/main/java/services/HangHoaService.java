@@ -50,4 +50,11 @@ public class HangHoaService implements HangHoaDAO{
 		// TODO Auto-generated method stub
 		return entityManager.createNamedQuery("hanghoa.findAll", HangHoa.class).getResultList();
 	}
+
+	@Override
+	public boolean capNhatSoLuongHH(String maHH, int soLuong) {
+		// TODO Auto-generated method stub khang capNhatSoLuongKhiTaoHD
+		
+		return false;
+	}
 }

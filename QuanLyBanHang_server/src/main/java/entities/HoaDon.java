@@ -27,7 +27,6 @@ public class HoaDon implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "maKhachHang")
 	private KhachHang khachHang;
-	private double tienKhachTra;
 	private int diemQuyDoi;
 	private String ghiChu;
 	private TrangThaiHoaDon trangThaiHoaDon;
@@ -41,14 +40,13 @@ public class HoaDon implements Serializable {
 	}
 
 	public HoaDon(String maHoaDon, LocalDateTime thoiGianLapHoaDon, NhanVien nhanVien, KhachHang khachHang,
-			double tienKhachTra, int diemQuyDoi, String ghiChu, TrangThaiHoaDon trangThaiHoaDon, double tongTien,
+			int diemQuyDoi, String ghiChu, TrangThaiHoaDon trangThaiHoaDon, double tongTien,
 			double tienKhachDua, double tienThua, double thanhTien) {
 		super();
 		this.maHoaDon = maHoaDon;
 		this.thoiGianLapHoaDon = thoiGianLapHoaDon;
 		this.nhanVien = nhanVien;
 		this.khachHang = khachHang;
-		this.tienKhachTra = tienKhachTra;
 		this.diemQuyDoi = diemQuyDoi;
 		this.ghiChu = ghiChu;
 		this.trangThaiHoaDon = trangThaiHoaDon;
@@ -88,14 +86,6 @@ public class HoaDon implements Serializable {
 
 	public void setKhachHang(KhachHang khachHang) {
 		this.khachHang = khachHang;
-	}
-
-	public double getTienKhachTra() {
-		return tienKhachTra;
-	}
-
-	public void setTienKhachTra(double tienKhachTra) {
-		this.tienKhachTra = tienKhachTra;
 	}
 
 	public int getDiemQuyDoi() {
@@ -157,7 +147,7 @@ public class HoaDon implements Serializable {
 	@Override
 	public String toString() {
 		return "HoaDon [maHoaDon=" + maHoaDon + ", thoiGianLapHoaDon=" + thoiGianLapHoaDon + ", nhanVien=" + nhanVien
-				+ ", khachHang=" + khachHang + ", tienKhachTra=" + tienKhachTra + ", diemQuyDoi=" + diemQuyDoi
+				+ ", khachHang=" + khachHang + ", tienKhachTra=" + ", diemQuyDoi=" + diemQuyDoi
 				+ ", ghiChu=" + ghiChu + ", trangThaiHoaDon=" + trangThaiHoaDon + ", tongTien=" + tongTien
 				+ ", tienKhachDua=" + tienKhachDua + ", tienThua=" + tienThua + ", thanhTien=" + thanhTien + "]";
 	}

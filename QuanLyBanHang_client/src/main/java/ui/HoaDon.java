@@ -100,29 +100,19 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         jPanel4 = new javax.swing.JPanel();
         lblDenNgay = new javax.swing.JLabel();
         dbDenNgay = new com.github.lgooddatepicker.components.DatePicker();
-        jPanel5 = new javax.swing.JPanel();
-        lblTimTheoHangHoa = new javax.swing.JLabel();
-        timTheoHangHoa1 = new sampleUi.TimTheoHangHoa();
         jPanel6 = new javax.swing.JPanel();
         lblTuKhoa = new javax.swing.JLabel();
         timTheoTuKhoa1 = new sampleUi.TimTheoTuKhoa();
         jPanel7 = new javax.swing.JPanel();
         lblTrangThai = new javax.swing.JLabel();
         cbTrangThai = new javax.swing.JComboBox<>();
-        jPanel8 = new javax.swing.JPanel();
-        lblComboBoxHoaDon = new javax.swing.JLabel();
-        cbHoaDon = new javax.swing.JComboBox<>();
         jPanel9 = new javax.swing.JPanel();
         btnTimKiem = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlContain = new javax.swing.JPanel();
-        pnlPage = new javax.swing.JPanel();
-        pagination1 = new sampleUi.paginationStyle.Pagination();
         pnlContainHeader = new javax.swing.JPanel();
         lblTongHoaDon = new javax.swing.JLabel();
         txtTongSoHoaDon = new javax.swing.JTextField();
-        lblChonSoHDHienThi = new javax.swing.JLabel();
-        cbChonHoaDonHienThi = new javax.swing.JComboBox<>();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -220,50 +210,30 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
 
         pnlHeader.add(jPanel4);
 
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setPreferredSize(new java.awt.Dimension(210, 100));
-
-        lblTimTheoHangHoa.setText("Tìm kiếm theo hàng hoá");
-        lblTimTheoHangHoa.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-
-        timTheoHangHoa1.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(timTheoHangHoa1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(lblTimTheoHangHoa)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
-                .addComponent(lblTimTheoHangHoa)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(timTheoHangHoa1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
-        );
-
-        pnlHeader.add(jPanel5);
-
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel6.setPreferredSize(new java.awt.Dimension(255, 100));
+        jPanel6.setPreferredSize(new java.awt.Dimension(400, 100));
 
         lblTuKhoa.setText("Từ khoá tìm kiếm");
         lblTuKhoa.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
 
         timTheoTuKhoa1.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
+        timTheoTuKhoa1.setPreferredSize(new java.awt.Dimension(350, 23));
+        timTheoTuKhoa1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                timTheoTuKhoa1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(30, 30, 30)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(timTheoTuKhoa1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTuKhoa))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(lblTuKhoa)
+                    .addComponent(timTheoTuKhoa1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,43 +283,6 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
 
         pnlHeader.add(jPanel7);
 
-        jPanel8.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel8.setPreferredSize(new java.awt.Dimension(149, 100));
-
-        lblComboBoxHoaDon.setText("Hoá đơn");
-        lblComboBoxHoaDon.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-
-        cbHoaDon.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Theo đơn", "Không theo đơn", " " }));
-        cbHoaDon.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        cbHoaDon.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbHoaDonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblComboBoxHoaDon)
-                    .addComponent(cbHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(lblComboBoxHoaDon)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-
-        pnlHeader.add(jPanel8);
-
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
 
         btnTimKiem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/icons8-find-24.png"))); // NOI18N
@@ -384,28 +317,6 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         pnlContain.setPreferredSize(new java.awt.Dimension(1920, 651));
         pnlContain.setLayout(new java.awt.BorderLayout());
 
-        pnlPage.setBackground(new java.awt.Color(193, 219, 208));
-        pnlPage.setPreferredSize(new java.awt.Dimension(1920, 60));
-
-        javax.swing.GroupLayout pnlPageLayout = new javax.swing.GroupLayout(pnlPage);
-        pnlPage.setLayout(pnlPageLayout);
-        pnlPageLayout.setHorizontalGroup(
-            pnlPageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlPageLayout.createSequentialGroup()
-                .addContainerGap(1281, Short.MAX_VALUE)
-                .addComponent(pagination1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1282, Short.MAX_VALUE))
-        );
-        pnlPageLayout.setVerticalGroup(
-            pnlPageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlPageLayout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
-                .addComponent(pagination1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
-        );
-
-        pnlContain.add(pnlPage, java.awt.BorderLayout.SOUTH);
-
         pnlContainHeader.setBackground(new java.awt.Color(255, 255, 255));
         pnlContainHeader.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 15, 5));
 
@@ -418,19 +329,6 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         txtTongSoHoaDon.setEnabled(false);
         txtTongSoHoaDon.setPreferredSize(new java.awt.Dimension(100, 23));
         pnlContainHeader.add(txtTongSoHoaDon);
-
-        lblChonSoHDHienThi.setText("Chọn số hoá đơn hiển thị:");
-        lblChonSoHDHienThi.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        pnlContainHeader.add(lblChonSoHDHienThi);
-
-        cbChonHoaDonHienThi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "5", "10", "20", "50", "100" }));
-        cbChonHoaDonHienThi.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        cbChonHoaDonHienThi.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbChonHoaDonHienThiActionPerformed(evt);
-            }
-        });
-        pnlContainHeader.add(cbChonHoaDonHienThi);
 
         pnlContain.add(pnlContainHeader, java.awt.BorderLayout.PAGE_START);
 
@@ -464,19 +362,13 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         // TODO add your handling code here:
     }//GEN-LAST:event_cbTrangThaiActionPerformed
 
-    private void cbHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbHoaDonActionPerformed
+    private void timTheoTuKhoa1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timTheoTuKhoa1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbHoaDonActionPerformed
-
-    private void cbChonHoaDonHienThiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbChonHoaDonHienThiActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbChonHoaDonHienThiActionPerformed
+    }//GEN-LAST:event_timTheoTuKhoa1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnTimKiem;
-    private javax.swing.JComboBox<String> cbChonHoaDonHienThi;
-    private javax.swing.JComboBox<String> cbHoaDon;
     private javax.swing.JComboBox<String> cbLocTheoThoiGian;
     private javax.swing.JComboBox<String> cbTrangThai;
     private com.github.lgooddatepicker.components.DatePicker dbDenNgay;
@@ -484,27 +376,19 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JLabel lblChonSoHDHienThi;
-    private javax.swing.JLabel lblComboBoxHoaDon;
     private javax.swing.JLabel lblDenNgay;
     private javax.swing.JLabel lblLocTheoThoiGian;
-    private javax.swing.JLabel lblTimTheoHangHoa;
     private javax.swing.JLabel lblTongHoaDon;
     private javax.swing.JLabel lblTrangThai;
     private javax.swing.JLabel lblTuKhoa;
     private javax.swing.JLabel lblTuNgay;
-    private sampleUi.paginationStyle.Pagination pagination1;
     private javax.swing.JPanel pnlCenter;
     private javax.swing.JPanel pnlContain;
     private javax.swing.JPanel pnlContainHeader;
     private javax.swing.JPanel pnlHeader;
-    private javax.swing.JPanel pnlPage;
-    private sampleUi.TimTheoHangHoa timTheoHangHoa1;
     private sampleUi.TimTheoTuKhoa timTheoTuKhoa1;
     private javax.swing.JTextField txtTongSoHoaDon;
     // End of variables declaration//GEN-END:variables

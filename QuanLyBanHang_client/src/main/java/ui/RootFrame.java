@@ -33,7 +33,7 @@ public class RootFrame extends javax.swing.JFrame {
      * Creates new form TrangChu
      */
     public RootFrame() {
-    	setTitle("Phầm mềm quản lý quầy thuốc tây K3TD");
+    	setTitle("Phầm mềm quản lý bán hàng K3TD");
         initComponents();
         Image img = new ImageIcon(getClass().getResource("/icon/logo.jpg")).getImage();
         setIconImage(img);
@@ -41,6 +41,7 @@ public class RootFrame extends javax.swing.JFrame {
         AddContent.setContent(pnlContent);
         resizeFrameToScreenScale();
         setFontAll(new Font(lblUser.getName(), Font.PLAIN, 14));
+        config();
     }
  // Hàm này sẽ điều chỉnh kích thước frame sao cho phù hợp với tỷ lệ scale của màn hình
     private void resizeFrameToScreenScale() {
@@ -227,7 +228,7 @@ public class RootFrame extends javax.swing.JFrame {
 
         btnQLDonHang.setBackground(new java.awt.Color(193, 219, 208,0));
         btnQLDonHang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/icons8-bill-32.png"))); // NOI18N
-        btnQLDonHang.setText("Quản lý đơn hàng  ▾");
+        btnQLDonHang.setText("Quản lý hóa đơn");
         btnQLDonHang.setBorderPainted(false);
         btnQLDonHang.setPreferredSize(new java.awt.Dimension(200, 50));
         btnQLDonHang.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -532,7 +533,10 @@ public class RootFrame extends javax.swing.JFrame {
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlContent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 920, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jLayeredPane1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnlContent, javax.swing.GroupLayout.DEFAULT_SIZE, 908, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane1Layout.createSequentialGroup()
                     .addGap(50, 50, 50)
@@ -556,7 +560,7 @@ public class RootFrame extends javax.swing.JFrame {
 
         pnlFooter.setPreferredSize(new java.awt.Dimension(1920, 30));
 
-        lblFooter.setText("Phầm mềm quản lý hiệu thuốc tây K3TD - ver1.0.0");
+        lblFooter.setText("Phầm mềm quản lý bán hàng K3TD - ver1.0.0");
 
         javax.swing.GroupLayout pnlFooterLayout = new javax.swing.GroupLayout(pnlFooter);
         pnlFooter.setLayout(pnlFooterLayout);
@@ -630,15 +634,15 @@ public class RootFrame extends javax.swing.JFrame {
         Drop7.setSize(0, 0);
     }
     private void btnQLDonHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQLDonHangActionPerformed
-
-        if(!StatusMenu.temp3){
-            hideAllDropMenu();
-            Drop3.setLocation(btnQLDonHang.getLocation());
-            Drop3.setSize(200, 90);
-            StatusMenu.temp3=!StatusMenu.temp3;
-        }else{
-            hideAllDropMenu();
-        }
+          AddContent.addContent(new HoaDon());
+//        if(!StatusMenu.temp3){
+//            hideAllDropMenu();
+//            Drop3.setLocation(btnQLDonHang.getLocation());
+//            Drop3.setSize(200, 90);
+//            StatusMenu.temp3=!StatusMenu.temp3;
+//        }else{
+//            hideAllDropMenu();
+//        }
     }//GEN-LAST:event_btnQLDonHangActionPerformed
 
     private void btnQLHangHoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQLHangHoaActionPerformed
@@ -687,14 +691,6 @@ public class RootFrame extends javax.swing.JFrame {
     	pnlContent.revalidate();
         pnlContent.repaint();
     }//GEN-LAST:event_btnTraHangActionPerformed
-
-    private void lblTienIchMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblTienIchMouseEntered
-        lblTienIch.setFont(new Font(lblTienIch.getName(), Font.BOLD, lblTienIch.getFont().getSize()));
-    }//GEN-LAST:event_lblTienIchMouseEntered
-
-    private void lblTienIchMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblTienIchMouseExited
-        lblTienIch.setFont(btnBanHang.getFont());
-    }//GEN-LAST:event_lblTienIchMouseExited
 
     private void lblUserMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblUserMouseEntered
         lblUser.setFont(new Font(lblTienIch.getName(), Font.BOLD, lblTienIch.getFont().getSize()));
@@ -800,6 +796,14 @@ public class RootFrame extends javax.swing.JFrame {
     private void btnKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKhachHangActionPerformed
         AddContent.addContent(new KhachHang());
     }//GEN-LAST:event_btnKhachHangActionPerformed
+
+    private void lblTienIchMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblTienIchMouseExited
+        lblTienIch.setFont(btnBanHang.getFont());
+    }//GEN-LAST:event_lblTienIchMouseExited
+
+    private void lblTienIchMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblTienIchMouseEntered
+        lblTienIch.setFont(new Font(lblTienIch.getName(), Font.BOLD, lblTienIch.getFont().getSize()));
+    }//GEN-LAST:event_lblTienIchMouseEntered
     
     private void setFontAll(Font font){
         lblTienIch.setFont(font);
@@ -891,4 +895,10 @@ public class RootFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlHeaderTop;
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
+
+    private void config() {
+        lblTienIch.setVisible(false);
+        btnThongKe.setVisible(false);
+        
+    }
 }

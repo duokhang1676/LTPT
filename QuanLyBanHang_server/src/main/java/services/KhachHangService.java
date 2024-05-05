@@ -1,5 +1,7 @@
 package services;
 
+import java.util.List;
+
 import dao.KhachHangDAO;
 import entities.HangHoa;
 import entities.KhachHang;
@@ -24,6 +26,17 @@ public class KhachHangService implements KhachHangDAO{
 	    } catch (NoResultException e) {
 	        return null; // Handle no result found
 	    }
+	}
+	
+
+	public boolean add(KhachHang kh) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public List<KhachHang> getAllKH() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	@Override
 	public boolean updateKH(KhachHang kh) {

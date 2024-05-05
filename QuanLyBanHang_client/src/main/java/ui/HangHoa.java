@@ -12,12 +12,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import components.AddContent;
+import components.ConnectServer;
 import components.StatusMenu;
+import entities.NhomHang;
+import entities.TrangThaiHangHoa;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -36,21 +43,91 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 
     private DefaultTableModel model_hangHoa;
     private JTable tbl_hangHoa;
+	private String ip = ConnectServer.ip;
+	private int port = ConnectServer.port;
+	private entities.HangHoa hangHoa;
+	private List<entities.HangHoa> dsHangHoa;
+	private List<NhomHang> dsNhomHang;
+	
 	/**
      * Creates new form HangHoa
      */
     public HangHoa() {
         initComponents();
         addTableHangHoa();
-        
+       loadDataTableHangHoa();
+       loadDataNhomHang();
+       loadDataTrangThai();
     }
 
     
+	private void loadDataTrangThai() {
+		// TODO Auto-generated method stub
+		for(TrangThaiHangHoa tt : TrangThaiHangHoa.values()) {
+			cb_trangThai.addItem(tt.equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
+		}
+	}
+	
+	private void loadDataNhomHang() {
+		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_NHOMHANG");
+			out.flush();
+			dsNhomHang = (List<entities.NhomHang>)in.readObject();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsNhomHang != null) {
+			dsNhomHang.forEach(nh->cb_nhomHang.addItem(nh.getTenNhomHang()));
+		}
+	}
 
-	
-	
+	private void loadDataTableHangHoa() {
+		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_HANGHOA");
+			out.flush();
+			
+//	        List<HangHoa> danhSachHangHoa = (List<HangHoa>) in.readObject();
+	        
+//	        for (HangHoa hangHoa : danhSachHangHoa) {
+//				dsHangHoa.add(hangHoa);
+//			}
+			dsHangHoa = (List<entities.HangHoa>)in.readObject();
+			System.out.println(dsHangHoa);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsHangHoa != null) {
+			int stt = 1;
+			model_hangHoa.setNumRows(0);
+			for (entities.HangHoa hh : dsHangHoa) {
+				model_hangHoa.addRow(new Object[] {stt,hh.getMaHangHoa(), hh.getTenHangHoa(), hh.getNhomHang().getTenNhomHang(),
+						hh.getSoLuongDinhMuc(), hh.getGiaBan(), hh.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán"});
+				
+				stt++;
+			}
+		}
+	}
 
-	
+
+
+
+
+
+
 
 	/**
      * This method is called from within the constructor to initialize the form.
@@ -226,6 +303,42 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 
     private void btn_timKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_timKiemActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String ma = txt_timKiem.getText().trim();
+			String trangThaiHH = cb_trangThai.getSelectedItem().toString().trim();
+			String nhomHang = cb_nhomHang.getSelectedItem().toString().trim();
+			if (ma.isEmpty()) {
+				loadDataTableHangHoa();
+				showMessage("Nhập thông tin cần tìm!");
+				
+			}else {
+				out.writeUTF("TIM_HANGHOA_THEOMA_THEOTEN");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				hangHoa = (entities.HangHoa)in.readObject();
+				
+				if (hangHoa != null) {
+		    		model_hangHoa.setRowCount(0);
+		    		model_hangHoa.addRow(new Object[] {1,hangHoa.getMaHangHoa(), hangHoa.getTenHangHoa(), hangHoa.getNhomHang().getTenNhomHang(),
+		    				hangHoa.getSoLuongDinhMuc(), hangHoa.getGiaBan(), hangHoa.getTrangThaiHangHoa()});
+		    		txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+				}else {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy hàng hóa!");
+					txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
     	
     }//GEN-LAST:event_btn_timKiemActionPerformed
 
@@ -302,7 +415,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
     // End of variables declaration//GEN-END:variables
 
     private void addTableHangHoa() {
-        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Loại hàng","Số lượng","Thành tiền", "Trạng thái"};
+        String[] colNames = {"STT","Mã hàng hóa", "Tên hàng hóa", "Nhóm hàng","Số lượng","Giá bán","Trạng thái"};
         
         model_hangHoa = new DefaultTableModel(colNames, 0);
         tbl_hangHoa = new JTable(model_hangHoa);
@@ -349,7 +462,47 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		if (e.getClickCount() == 2) {
+			AddContent.addContent(new TaoHangHoa());
+			int row = tbl_hangHoa.getSelectedRow();
+	    	String maHH = tbl_hangHoa.getValueAt(row, 1).toString();
+			try (Socket socket = new Socket(ip, port)) {
+
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				
+				out.writeUTF("TIM_HANGHOA_THEOMA");
+				out.flush();
+				out.writeUTF(maHH);
+				out.flush();
+				hangHoa = (entities.HangHoa)in.readObject();
+			
+		    	TaoHangHoa.txt_maHangHoa.setText(hangHoa.getMaHangHoa());
+		    	TaoHangHoa.txt_tenHangHoa1.setText(hangHoa.getTenHangHoa());
+		    	TaoHangHoa.txt_maVach.setText(hangHoa.getMaVach());
+		    	TaoHangHoa.cb_loaiHangHoa.setSelectedItem(hangHoa.getNhaCungCap().getTenNhaCungCap());
+		    	
+		    	TaoHangHoa.cb_nhomHangHoa.setSelectedItem(hangHoa.getNhomHang().getTenNhomHang());
+		    	
+		    	
+		    	TaoHangHoa.txt_soLuongDinhMuc1.setText(String.valueOf(hangHoa.getSoLuongDinhMuc()));
+		    	TaoHangHoa.txt_soLuongCanhBao.setText(String.valueOf(hangHoa.getSoLuongCanhBao()));
+		    	TaoHangHoa.txt_ngaySX.setDate(hangHoa.getNgaySanXuat());
+		    	TaoHangHoa.txt_hanSD.setDate(hangHoa.getHanSuDung());
+		    	TaoHangHoa.txt_giaBan.setText(String.valueOf(hangHoa.getGiaBan()));
+		    	TaoHangHoa.txt_giaNhap.setText(String.valueOf(hangHoa.getGiaNhap()));
+		    	TaoHangHoa.txt_donViTinh.setText(hangHoa.getDonViTinh());
+		    	TaoHangHoa.txt_nuocSX.setText(hangHoa.getNuocSanXuat());
+		    	TaoHangHoa.txt_hangSanXuat.setText(hangHoa.getHangSanXuat());
+		    	TaoHangHoa.txt_moTa.setText(hangHoa.getMoTa());
+		    	TaoHangHoa.txt_vat.setText(String.valueOf(hangHoa.getThue()));
+		    	TaoHangHoa.cb_trangThai.setSelectedItem(hangHoa.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
+		    	
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 		
 	}
 

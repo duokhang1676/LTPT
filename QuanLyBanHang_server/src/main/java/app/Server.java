@@ -10,14 +10,18 @@ import entities.ChiTietHoaDon;
 import entities.HangHoa;
 import entities.HoaDon;
 import entities.KhachHang;
+import entities.NhaCungCap;
 import entities.NhanVien;
+import entities.NhomHang;
 import jakarta.persistence.EntityManager;
 import services.ChiTietHoaDonService;
 import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
 import services.HoaDonService;
 import services.KhachHangService;
+import services.NhaCungCapService;
 import services.NhanVienService;
+import services.NhomHangService;
 
 public class Server {
 	public static void main(String[] args) {
@@ -49,8 +53,10 @@ class ClientHandler implements Runnable {
 	private HangHoaService hangHoaService;
 	private KhachHangService khachHangService;
 	private NhanVienService nhanVienService;
+	private NhomHangService nhomHangService;
 	private HoaDonService hoaDonService;
 	private ChiTietHoaDonService chiTietHoaDonService;
+	private NhaCungCapService nhaCungCapService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -60,8 +66,10 @@ class ClientHandler implements Runnable {
 		this.hangHoaService = new HangHoaService(this.entityManager);
 		this.khachHangService = new KhachHangService(entityManager);
 		this.nhanVienService = new NhanVienService(entityManager);
+		this.nhomHangService = new NhomHangService(entityManager);
 		this.hoaDonService = new HoaDonService(entityManager);
 		this.chiTietHoaDonService = new ChiTietHoaDonService(entityManager);
+		this.nhaCungCapService = new NhaCungCapService(entityManager);
 	}
 
 	@Override
@@ -92,6 +100,22 @@ class ClientHandler implements Runnable {
 					out.writeObject(nhanVien);
 					out.flush();
 					break;
+				case "GET_DANHSACH_HANGHOA":
+					List<HangHoa> dsHangHoa = hangHoaService.getAllHangHoa();
+					out.writeObject(dsHangHoa);
+					out.flush();
+					break;
+				case "GET_DANHSACH_NHOMHANG":
+					List<NhomHang> dsNhomHang = nhomHangService.getAllNH();
+					out.writeObject(dsNhomHang);
+					out.flush();
+					break;
+				case "TIM_HANGHOA_THEOMA_THEOTEN":
+					HangHoa hangHoa1 = hangHoaService.timHangHoaTheoMaHoacTen(in.readUTF());
+					out.writeObject(hangHoa1);
+					out.flush();
+					break;
+
 				case "THEM_HOADON":
 					boolean temp = hoaDonService.themHoaDon((HoaDon)in.readObject());
 					out.writeBoolean(temp);
@@ -105,6 +129,16 @@ class ClientHandler implements Runnable {
 					break;
 				case "CAPNHAT_KHACHHANG":
 					khachHangService.updateKH((KhachHang)in.readObject());
+					break;
+				case "THEM_HANGHOA":
+					boolean rsThemHH = hangHoaService.add((HangHoa)in.readObject());
+					out.writeBoolean(rsThemHH);
+					out.flush();
+					break;
+				case "GET_DANHSACH_NCC":
+					List<NhaCungCap> dsNCC = nhaCungCapService.getAllNCC();
+					out.writeObject(dsNCC);
+					out.flush();
 					break;
 				}
 			}

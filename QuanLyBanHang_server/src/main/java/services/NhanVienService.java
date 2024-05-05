@@ -1,5 +1,7 @@
 package services;
 
+import java.util.List;
+
 import dao.NhanVienDAO;
 import entities.KhachHang;
 import entities.NhanVien;
@@ -15,6 +17,16 @@ public class NhanVienService implements NhanVienDAO{
 	@Override
 	public NhanVien timNVTheoMa(String maNV) {
 		return entityManager.find(NhanVien.class, maNV);
+	}
+	@Override
+	public boolean add(NhanVien nv) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public List<NhanVien> getAllKV() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -6,18 +6,26 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import components.AddContent;
 import components.ConnectServer;
 import components.ResizeContent;
+import entities.TrangThaiHangHoa;
 import entities.TrangThaiNCC;
 
 
@@ -25,7 +33,7 @@ import entities.TrangThaiNCC;
  *
  * @author Admin
  */
-public class NhaCungCap extends javax.swing.JPanel {
+public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
 
     
 	private DefaultTableModel model_NCC;
@@ -33,6 +41,7 @@ public class NhaCungCap extends javax.swing.JPanel {
 	private String ip = ConnectServer.ip;
 	private int port = ConnectServer.port;
 	private List<entities.NhaCungCap> dsNCC;
+	private entities.NhaCungCap ncc;
 
 	/**
      * Creates new form NhanVien_httk
@@ -110,12 +119,22 @@ public class NhaCungCap extends javax.swing.JPanel {
         JTableHeader headerTable =  tbl_NCC.getTableHeader();
 		headerTable.setPreferredSize(new Dimension(headerTable.getPreferredSize().width, 40));
 		tbl_NCC.setRowHeight(40);
-//		setCellEditable();
+		setCellEditable();
         pnlCenter.add(js_tableHangHoa, BorderLayout.CENTER);
-        
+        tbl_NCC.addMouseListener(this);
 //        tbl_hangHoa.addMouseListener(this);
 	}
-
+	public void setCellEditable() {
+		for (int i = 0; i < tbl_NCC.getColumnCount(); i++) {
+			tbl_NCC.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(new JTextField()) {
+					@Override
+					public boolean isCellEditable(EventObject e) {
+						// Trả về false để ngăn chặn chỉnh sửa trực tiếp
+						return false;
+					}
+				});
+			}
+	}
 	/**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -468,15 +487,81 @@ public class NhaCungCap extends javax.swing.JPanel {
 
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LuuActionPerformed
         // TODO add your handling code here:
+    	if (validData()) {
+			try (Socket socket = new Socket(ip, port)){
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+    			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+    			
+    			String tenNCC = txtTenNhanVien.getText();
+    			String soDT = txtSoDienThoai.getText();
+    			String email = txtSoDienThoai2.getText();
+    			String diaChi = txtSoDienThoai1.getText();
+    			String ghiChu = jTextArea1.getText();
+    			TrangThaiNCC trangThai = null;
+    	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+    	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+    	    		trangThai = TrangThaiNCC.DANG_HOAT_DONG;
+    			}else {
+    				trangThai = TrangThaiNCC.NGUNG_HOAT_DONG;
+    			}
+    	    	
+    	    	entities.NhaCungCap ncc = new entities.NhaCungCap("", tenNCC, soDT, diaChi, email, ghiChu, trangThai);
+    	    	
+    	    	out.writeUTF("THEM_NCC");
+    			out.flush();
+    			out.writeObject(ncc);
+    			out.flush();
+    			
+    			if (in.readBoolean()) {
+    				showMessage("Thêm nhà cung cấp mới thành công!");
+    				loadDataNCC();
+    			}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
     }//GEN-LAST:event_btn_LuuActionPerformed
 
-    private void txtTenNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNhanVienActionPerformed
+    private boolean validData() {
+		// TODO Auto-generated method stub
+    	String tenNCC = txtTenNhanVien.getText().trim();
+    	String soDienThoai = txtSoDienThoai.getText().trim();
+    	
+    	if (tenNCC.length() <= 0) {
+			showMessage("Tên nhà cung cấp không được để trống!");
+			return false;
+		}
+    	
+    	if (soDienThoai.length() <= 0) {
+			showMessage("Số điện thoại không được để trống!");
+			return false;
+		}
+    	
+    	
+		return true;
+	}
+
+
+
+	private void txtTenNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNhanVienActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTenNhanVienActionPerformed
 
     private void btn_DongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DongActionPerformed
         // TODO add your handling code here:
-        pnl_left.setVisible(false);
+    	pnl_left.setVisible(false);
+        btn_Luu.setVisible(true);
+        
+        txt_maNhanVien.setText("");
+        txtTenNhanVien.setText("");
+		txtSoDienThoai.setText("");
+		txtSoDienThoai1.setText("");
+		txtSoDienThoai2.setText("");
+		jTextArea1.setText("");
+		
+    	jComboBox2.setSelectedIndex(0);
+    	
         
     }//GEN-LAST:event_btn_DongActionPerformed
 
@@ -494,9 +579,52 @@ public class NhaCungCap extends javax.swing.JPanel {
 
     private void btn_TimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TimActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String ma = txt_timKiem.getText().trim();
+			
+			if (ma.isEmpty()) {
+				loadDataNCC();
+				showMessage("Nhập thông tin cần tìm!");
+				
+			}else {
+				out.writeUTF("TIM_NCC_THEOMA_THEOTEN");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				ncc = (entities.NhaCungCap)in.readObject();
+				
+				if (ncc != null) {
+					model_NCC.setRowCount(0);
+					model_NCC.addRow(new Object[] {1, ncc.getMaNhaCungCap(), ncc.getTenNhaCungCap(), ncc.getEmail(), ncc.getSoDienThoai(),
+							ncc.getGhiChu(), ncc.getTrangThai().equals(TrangThaiNCC.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động"});
+		    		txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+				}else {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy nhà cung cấp!");
+					txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+					loadDataNCC();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
     }//GEN-LAST:event_btn_TimActionPerformed
 
-    private void btn_themNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_themNCCActionPerformed
+    private void showMessage(String string) {
+		// TODO Auto-generated method stub
+		JOptionPane.showMessageDialog(this, string);
+	}
+
+
+
+	private void btn_themNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_themNCCActionPerformed
         // TODO add your handling code here:
         pnl_left.setVisible(true);
     }//GEN-LAST:event_btn_themNCCActionPerformed
@@ -540,4 +668,72 @@ public class NhaCungCap extends javax.swing.JPanel {
     private javax.swing.JTextField txt_maNhanVien;
     private javax.swing.JTextField txt_timKiem;
     // End of variables declaration//GEN-END:variables
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (e.getClickCount() == 2) {
+			pnl_left.setVisible(true);
+			btn_Luu.setVisible(false);
+			
+			int row = tbl_NCC.getSelectedRow();
+	    	String ma = tbl_NCC.getValueAt(row, 1).toString();
+			try (Socket socket = new Socket(ip, port)) {
+
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				
+				out.writeUTF("TIM_NCC_THEOMA_THEOTEN");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				ncc = (entities.NhaCungCap)in.readObject();
+			
+		    	txt_maNhanVien.setText(ncc.getMaNhaCungCap());
+		    	txtTenNhanVien.setText(ncc.getTenNhaCungCap());
+		    	txtSoDienThoai.setText(ncc.getSoDienThoai());
+		    	txtSoDienThoai1.setText(ncc.getDiaChi());
+		    	txtSoDienThoai2.setText(ncc.getEmail());
+		    	jComboBox2.setSelectedItem(ncc.getTrangThai().equals(TrangThaiNCC.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động");
+		    	jTextArea1.setText(ncc.getGhiChu());
+		    	
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+	}
+
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

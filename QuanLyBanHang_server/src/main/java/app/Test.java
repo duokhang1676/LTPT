@@ -2,6 +2,7 @@ package app;
 
 import java.util.List;
 
+import entities.HangHoa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 import services.EntityManagerFactoryUtil;
@@ -39,5 +40,7 @@ public class Test {
 //		boolean rs_addHH = hangHoaDao.add(hh);
 //		System.out.println(rs_addHH);
 
+		HangHoa hhTim = hangHoaDao.timHangHoaTheoMaHoacTen("asd");
+		System.out.println(hhTim);
 	}
 }

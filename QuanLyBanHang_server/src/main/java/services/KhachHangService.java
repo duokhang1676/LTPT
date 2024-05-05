@@ -31,12 +31,24 @@ public class KhachHangService implements KhachHangDAO{
 
 	public boolean add(KhachHang kh) {
 		// TODO Auto-generated method stub
+		EntityTransaction trans = entityManager.getTransaction();
+		
+		try {
+			trans.begin();
+			entityManager.persist(kh);
+			trans.commit();
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			trans.rollback();
+		}
 		return false;
 	}
 	@Override
 	public List<KhachHang> getAllKH() {
 		// TODO Auto-generated method stub
-		return null;
+		return entityManager.createQuery("Select k from KhachHang k", KhachHang.class).getResultList();
 	}
 	@Override
 	public boolean updateKH(KhachHang kh) {

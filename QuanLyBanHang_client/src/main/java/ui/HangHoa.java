@@ -332,6 +332,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 					JOptionPane.showMessageDialog(this, "Không tìm thấy hàng hóa!");
 					txt_timKiem.requestFocus();
 					txt_timKiem.selectAll();
+					loadDataTableHangHoa();
 				}
 			}
 
@@ -463,7 +464,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getClickCount() == 2) {
-			AddContent.addContent(new TaoHangHoa());
+			AddContent.addContent(new XemChiTietHangHoa());
 			int row = tbl_hangHoa.getSelectedRow();
 	    	String maHH = tbl_hangHoa.getValueAt(row, 1).toString();
 			try (Socket socket = new Socket(ip, port)) {
@@ -477,26 +478,26 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 				out.flush();
 				hangHoa = (entities.HangHoa)in.readObject();
 			
-		    	TaoHangHoa.txt_maHangHoa.setText(hangHoa.getMaHangHoa());
-		    	TaoHangHoa.txt_tenHangHoa1.setText(hangHoa.getTenHangHoa());
-		    	TaoHangHoa.txt_maVach.setText(hangHoa.getMaVach());
-		    	TaoHangHoa.cb_loaiHangHoa.setSelectedItem(hangHoa.getNhaCungCap().getTenNhaCungCap());
+		    	XemChiTietHangHoa.txt_maHangHoa.setText(hangHoa.getMaHangHoa());
+		    	XemChiTietHangHoa.txt_tenHangHoa1.setText(hangHoa.getTenHangHoa());
+		    	XemChiTietHangHoa.txt_maVach.setText(hangHoa.getMaVach());
+		    	XemChiTietHangHoa.cb_loaiHangHoa.setSelectedItem(hangHoa.getNhaCungCap().getTenNhaCungCap());
 		    	
-		    	TaoHangHoa.cb_nhomHangHoa.setSelectedItem(hangHoa.getNhomHang().getTenNhomHang());
+		    	XemChiTietHangHoa.cb_nhomHangHoa.setSelectedItem(hangHoa.getNhomHang().getTenNhomHang());
 		    	
 		    	
-		    	TaoHangHoa.txt_soLuongDinhMuc1.setText(String.valueOf(hangHoa.getSoLuongDinhMuc()));
-		    	TaoHangHoa.txt_soLuongCanhBao.setText(String.valueOf(hangHoa.getSoLuongCanhBao()));
-		    	TaoHangHoa.txt_ngaySX.setDate(hangHoa.getNgaySanXuat());
-		    	TaoHangHoa.txt_hanSD.setDate(hangHoa.getHanSuDung());
-		    	TaoHangHoa.txt_giaBan.setText(String.valueOf(hangHoa.getGiaBan()));
-		    	TaoHangHoa.txt_giaNhap.setText(String.valueOf(hangHoa.getGiaNhap()));
-		    	TaoHangHoa.txt_donViTinh.setText(hangHoa.getDonViTinh());
-		    	TaoHangHoa.txt_nuocSX.setText(hangHoa.getNuocSanXuat());
-		    	TaoHangHoa.txt_hangSanXuat.setText(hangHoa.getHangSanXuat());
-		    	TaoHangHoa.txt_moTa.setText(hangHoa.getMoTa());
-		    	TaoHangHoa.txt_vat.setText(String.valueOf(hangHoa.getThue()));
-		    	TaoHangHoa.cb_trangThai.setSelectedItem(hangHoa.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
+		    	XemChiTietHangHoa.txt_soLuongDinhMuc1.setText(String.valueOf(hangHoa.getSoLuongDinhMuc()));
+		    	XemChiTietHangHoa.txt_soLuongCanhBao.setText(String.valueOf(hangHoa.getSoLuongCanhBao()));
+		    	XemChiTietHangHoa.txt_ngaySX.setDate(hangHoa.getNgaySanXuat());
+		    	XemChiTietHangHoa.txt_hanSD.setDate(hangHoa.getHanSuDung());
+		    	XemChiTietHangHoa.txt_giaBan.setText(String.valueOf(hangHoa.getGiaBan()));
+		    	XemChiTietHangHoa.txt_giaNhap.setText(String.valueOf(hangHoa.getGiaNhap()));
+		    	XemChiTietHangHoa.txt_donViTinh.setText(hangHoa.getDonViTinh());
+		    	XemChiTietHangHoa.txt_nuocSX.setText(hangHoa.getNuocSanXuat());
+		    	XemChiTietHangHoa.txt_hangSanXuat.setText(hangHoa.getHangSanXuat());
+		    	XemChiTietHangHoa.txt_moTa.setText(hangHoa.getMoTa());
+		    	XemChiTietHangHoa.txt_vat.setText(String.valueOf(hangHoa.getThue()));
+		    	XemChiTietHangHoa.cb_trangThai.setSelectedItem(hangHoa.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
 		    	
 
 			} catch (Exception e1) {

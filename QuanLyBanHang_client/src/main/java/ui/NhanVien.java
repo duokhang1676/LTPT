@@ -6,25 +6,43 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.time.LocalDate;
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import components.ConnectServer;
 import components.ResizeContent;
+import entities.ChucVuNhanVien;
+import entities.TrangThaiKhachHang;
+import entities.TrangThaiNhanVien;
 
 
 /**
  *
  * @author Admin
  */
-public class NhanVien extends javax.swing.JPanel {
+public class NhanVien extends javax.swing.JPanel implements MouseListener {
 
 
 	private DefaultTableModel model_NV;
 	private JTable tbl_NV;
+	private String ip = ConnectServer.ip;
+	private int port = ConnectServer.port;
+	private List<entities.NhanVien> dsNV;
+	private entities.NhanVien n;
 	/**
      * Creates new form NhanVien_httk
      */
@@ -33,9 +51,39 @@ public class NhanVien extends javax.swing.JPanel {
         ResizeContent.resizeContent(this);
         pnl_left.setVisible(false);
         addTableNV();
+        loadDataNV();
      
     }
     
+
+	private void loadDataNV() {
+		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_NV");
+			out.flush();
+			dsNV =(List<entities.NhanVien>) in.readObject();
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsNV!=null) {
+			int stt = 1;
+			model_NV.setRowCount(0);
+			for (entities.NhanVien n : dsNV) {
+				//"STT","Mã Nhân Viên", "Họ và Tên", "Tổng Tiền Bán",  "Số điện thoại","Ghi chú","Trạng thái"
+				model_NV.addRow(new Object[] {stt, n.getMaNhanVien(), n.getTenNhanVien(), n.getChucVu().equals(ChucVuNhanVien.NHAN_VIEN)?"Nhân viên":"Quản lý", n.getSoDienThoai(),
+						n.getGhiChu(),n.getTrangThaiNhanVien().equals(TrangThaiNhanVien.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động"});
+				stt++;
+			}
+		}
+	}
+
 
 	private void addTableNV() {
 		// TODO Auto-generated method stub
@@ -59,12 +107,22 @@ public class NhanVien extends javax.swing.JPanel {
         JTableHeader headerTable =  tbl_NV.getTableHeader();
 		headerTable.setPreferredSize(new Dimension(headerTable.getPreferredSize().width, 40));
 		tbl_NV.setRowHeight(40);
-//		setCellEditable();
+		setCellEditable();
         pnlCenter.add(js_tableNhanVien, BorderLayout.CENTER);
-        
+        tbl_NV.addMouseListener(this);
 //        tbl_hangHoa.addMouseListener(this);
 	}
-    
+	public void setCellEditable() {
+		for (int i = 0; i < tbl_NV.getColumnCount(); i++) {
+			tbl_NV.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(new JTextField()) {
+					@Override
+					public boolean isCellEditable(EventObject e) {
+						// Trả về false để ngăn chặn chỉnh sửa trực tiếp
+						return false;
+					}
+				});
+			}
+	}
     
     
     
@@ -503,7 +561,72 @@ public class NhanVien extends javax.swing.JPanel {
 
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LuuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btn_LuuActionPerformed
+    	//them kh
+    	if (validData()) {
+			try (Socket socket = new Socket(ip, port)){
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+    			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+    			
+    			String tenKH = txtTenNhanVien.getText();
+    			String soDT = txtSoDienThoai.getText();
+    			LocalDate ngaySinh = datePicker1.getDate();
+    			LocalDate ngayTao = datePicker2.getDate();
+    			ChucVuNhanVien chucVu = null;
+    			String selectedChucVu = jComboBox3.getSelectedItem().toString();
+    			if (selectedChucVu.equals("Nhân viên")) {
+					chucVu = ChucVuNhanVien.NHAN_VIEN;
+				}else {
+					chucVu = ChucVuNhanVien.QUAN_LY;
+				}
+    			Boolean gioiTinh = false;
+    			if (jRadioButton1.isSelected()) {
+					gioiTinh = true;
+				}else {
+					gioiTinh = false;
+				}
+    			String ghiChu = jTextArea1.getText();
+    			TrangThaiNhanVien trangThai = null;
+    	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+    	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+    	    		trangThai = TrangThaiNhanVien.DANG_HOAT_DONG;
+    			}else {
+    				trangThai = TrangThaiNhanVien.NGUNG_HOAT_DONG;
+    			}
+    	    	
+    	    	entities.NhanVien nv = new entities.NhanVien("", tenKH, ngaySinh, gioiTinh, soDT, "password", ngayTao, ghiChu, trangThai, chucVu);
+    	    	
+    	    	out.writeUTF("THEM_NV");
+    			out.flush();
+    			out.writeObject(nv);
+    			out.flush();
+    			
+    			if (in.readBoolean()) {
+    				showMessage("Thêm nhân viên mới thành công!");
+    				loadDataNV();
+    			}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+    	}
+    }private boolean validData() {
+		// TODO Auto-generated method stub
+    	String tenNV = txtTenNhanVien.getText().trim();
+    	String sdt = txtSoDienThoai.getText().trim();
+    	if (tenNV.length() <= 0) {
+			showMessage("Họ tên nhân viên không được để trống!");
+			return false;
+		}
+    	if (sdt.length()<=0) {
+			showMessage("Số điện thoại không được để trống!");
+			return false;
+		}
+		return true;
+		
+	}
+
+
+	//GEN-LAST:event_btn_LuuActionPerformed
 
     private void txtTenNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNhanVienActionPerformed
         // TODO add your handling code here:
@@ -511,11 +634,71 @@ public class NhanVien extends javax.swing.JPanel {
 
     private void btn_TimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TimActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String ma = jTextField1.getText().trim();
+			
+			if (ma.isEmpty()) {
+				loadDataNV();
+				showMessage("Nhập thông tin cần tìm!");
+				
+			}else {
+				out.writeUTF("TIM_NHANVIEN_THEOMA");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				n = (entities.NhanVien)in.readObject();
+				
+				if (n != null) {
+					model_NV.setRowCount(0);
+					model_NV.addRow(new Object[] {1, n.getMaNhanVien(), n.getTenNhanVien(), n.getChucVu().equals(ChucVuNhanVien.NHAN_VIEN)?"Nhân viên":"Quản lý", n.getSoDienThoai(),
+							n.getGhiChu(),n.getTrangThaiNhanVien().equals(TrangThaiNhanVien.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động"});
+		    		jTextField1.requestFocus();
+		    		jTextField1.selectAll();
+				}else {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
+					jTextField1.requestFocus();
+					jTextField1.selectAll();
+					loadDataNV();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
     }//GEN-LAST:event_btn_TimActionPerformed
 
-    private void btn_DongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DongActionPerformed
+    private void showMessage(String string) {
+		// TODO Auto-generated method stub
+		JOptionPane.showMessageDialog(this, string);
+	}
+
+
+	private void btn_DongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DongActionPerformed
         // TODO add your handling code here:
         pnl_left.setVisible(false);
+        btn_Luu.setVisible(true);
+        
+        txt_maNhanVien.setText("");
+        txtTenNhanVien.setText("");
+		txtSoDienThoai.setText("");
+		datePicker1.setText("");
+		datePicker2.setText("");
+		
+		jComboBox3.setSelectedIndex(0);
+		
+		jRadioButton1.setSelected(false);
+		jRadioButton2.setSelected(false);
+		jTextArea1.setText("");
+		
+    	jComboBox2.setSelectedIndex(0);
+    	
+        
+        
     }//GEN-LAST:event_btn_DongActionPerformed
 
     private void txt_maNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_maNhanVienActionPerformed
@@ -590,5 +773,78 @@ public class NhanVien extends javax.swing.JPanel {
     private javax.swing.JTextField txtSoDienThoai;
     private javax.swing.JTextField txtTenNhanVien;
     private javax.swing.JTextField txt_maNhanVien;
+	private entities.NhanVien nv;
     // End of variables declaration//GEN-END:variables
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (e.getClickCount() == 2) {
+			pnl_left.setVisible(true);
+			btn_Luu.setVisible(false);
+			
+			int row = tbl_NV.getSelectedRow();
+	    	String ma = tbl_NV.getValueAt(row, 1).toString();
+			try (Socket socket = new Socket(ip, port)) {
+
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				
+				out.writeUTF("TIM_NHANVIEN_THEOMA");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				nv = (entities.NhanVien)in.readObject();
+			
+		    	txt_maNhanVien.setText(nv.getMaNhanVien());
+		    	txtTenNhanVien.setText(nv.getTenNhanVien());
+		    	Boolean gioiTinh = nv.isGioiTinh();
+		    	if (gioiTinh) {
+					jRadioButton1.setSelected(true);
+					jRadioButton2.setSelected(false);
+				}else {
+					jRadioButton1.setSelected(false);
+					jRadioButton2.setSelected(true);
+				}
+		    	jComboBox3.setSelectedItem(nv.getChucVu().equals(ChucVuNhanVien.NHAN_VIEN)?"Nhân viên":"Quản lý");
+		    	txtSoDienThoai.setText(nv.getSoDienThoai());
+		    	datePicker1.setDate(nv.getNgaySinh());
+		    	datePicker2.setDate(nv.getNgayTao());
+		    	jComboBox2.setSelectedItem(nv.getTrangThaiNhanVien().equals(TrangThaiNhanVien.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động");
+		    	jTextArea1.setText(nv.getGhiChu());
+		    	
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

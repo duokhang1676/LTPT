@@ -11,6 +11,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -21,7 +25,11 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 import components.ButtonColumnUtil;
+import components.ConnectServer;
 import components.ResizeContent;
+import entities.NhaCungCap;
+import entities.NhomHang;
+import entities.TrangThaiHangHoa;
 
 
 /**
@@ -35,6 +43,10 @@ public class TaoHangHoa extends javax.swing.JPanel {
 	protected  JTable tbl_DVT;
 
 	private int stt = 2;
+	private String ip = ConnectServer.ip ;
+	private int port = ConnectServer.port;
+	private List<NhomHang> dsNhomHang;
+	private List<NhaCungCap> dsNCC;
 
 	/**
      * Creates new form TaoHangHoa2
@@ -42,13 +54,54 @@ public class TaoHangHoa extends javax.swing.JPanel {
     public TaoHangHoa() {
         initComponents();
         ResizeContent.resizeContent(this);
-     
+        loadNhomHang();
+        loadNCC();
 
 //        addTableDVT();
         
     }
 
-    private void addTableDVT() {
+    private void loadNCC() {
+		// TODO Auto-generated method stub
+    	try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_NCC");
+			out.flush();
+			dsNCC = (List<entities.NhaCungCap>)in.readObject();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsNCC != null) {
+			dsNCC.forEach(n->cb_loaiHangHoa.addItem(n.getTenNhaCungCap()));
+		}
+	}
+
+	private void loadNhomHang() {
+		// TODO Auto-generated method stub
+    	try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_NHOMHANG");
+			out.flush();
+			dsNhomHang = (List<entities.NhomHang>)in.readObject();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsNhomHang != null) {
+			dsNhomHang.forEach(nh->cb_nhomHangHoa.addItem(nh.getTenNhomHang()));
+		}
+	}
+
+	private void addTableDVT() {
 		// TODO Auto-generated method stub
     	String[] colNames = {"STT", "Tên đơn vị tính", "Quy đổi", "Giá bán",  "Bán hàng"};
         
@@ -151,7 +204,7 @@ public class TaoHangHoa extends javax.swing.JPanel {
         jLabel51.setText("Mã Hàng Hoá");
         jLabel51.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
-        jLabel52.setText("Loại Hàng Hoá");
+        jLabel52.setText("Nhà cung cấp");
         jLabel52.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
 
         jLabel55.setText("Hãng sản xuất");
@@ -727,13 +780,82 @@ public class TaoHangHoa extends javax.swing.JPanel {
     }
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LuuActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)){
+    		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String tenHH = txt_tenHangHoa1.getText();
+			
+			out.writeUTF("GET_DANHSACH_NHOMHANG");
+			out.flush();
+			dsNhomHang = (List<entities.NhomHang>)in.readObject();
+			NhomHang nhomHang = dsNhomHang.get(cb_nhomHangHoa.getSelectedIndex());
+			
+			
+			out.writeUTF("GET_DANHSACH_NCC");
+			out.flush();
+			dsNCC = (List<entities.NhaCungCap>)in.readObject();
+			NhaCungCap ncc = dsNCC.get(cb_loaiHangHoa.getSelectedIndex());
+			
+			
+			String nuocSX = txt_nuocSX.getText();
+	    	String hangSX = txt_hangSanXuat.getText();
+	    	
+	    	String moTa = txt_moTa.getText();
+	    	Double thue = Double.parseDouble(txt_vat.getText());
+	    	String maVach = txt_maVach.getText();
+	    	int soLuongDM = Integer.parseInt(txt_soLuongDinhMuc1.getText());
+	    	int soLuongCB = Integer.parseInt(txt_soLuongCanhBao.getText());
+	    	
+	    	LocalDate ngaySX = txt_ngaySX.getDate();
+	    	LocalDate hanSD = txt_hanSD.getDate();
+	    	
+	    	String donViTinh = txt_donViTinh.getText();
+	    	TrangThaiHangHoa trangThai = null;
+	    	String selectedTrangThai = cb_trangThai.getSelectedItem().toString();
+	    	if (selectedTrangThai.equals("Đang bán")) {
+	    		trangThai = TrangThaiHangHoa.DANG_BAN;
+			}else {
+				trangThai = TrangThaiHangHoa.NGUNG_BAN;
+			}
+			
+	    	entities.HangHoa hh = new entities.HangHoa("", tenHH, nhomHang, nuocSX, hangSX, moTa, soLuongCB, maVach, soLuongDM, soLuongCB, donViTinh, soLuongDM, soLuongCB, ncc, ngaySX, hanSD, trangThai);
+			out.writeUTF("THEM_HANGHOA");
+			out.flush();
+			out.writeObject(hh);
+			out.flush();
+			
+			if (in.readBoolean()) {
+				JOptionPane.showMessageDialog(this, "Thêm hàng hóa mới thành công!");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+    	
     	
     	
     	
     	
     }//GEN-LAST:event_btn_LuuActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+    private void themHangHoa(entities.HangHoa hh) {
+		// TODO Auto-generated method stub
+    	try (Socket socket = new Socket(ip, port)){
+    		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("THEM_HANGHOA");
+			out.flush();
+			out.writeObject(hh);
+			out.flush();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
@@ -823,15 +945,15 @@ public class TaoHangHoa extends javax.swing.JPanel {
     private javax.swing.JLabel lb_danhsach;
     private javax.swing.JPanel pnlFooter;
     private javax.swing.JPanel pnlHeader;
-    private javax.swing.JTextField txt_donViTinh;
+    protected static javax.swing.JTextField txt_donViTinh;
     protected static javax.swing.JTextField txt_giaBan;
     protected static javax.swing.JTextField txt_giaNhap;
-    private com.github.lgooddatepicker.components.DatePicker txt_hanSD;
+    protected static com.github.lgooddatepicker.components.DatePicker txt_hanSD;
     protected static javax.swing.JTextField txt_hangSanXuat;
     protected static javax.swing.JTextField txt_maHangHoa;
     protected static javax.swing.JTextField txt_maVach;
     protected static javax.swing.JTextField txt_moTa;
-    private com.github.lgooddatepicker.components.DatePicker txt_ngaySX;
+    protected static com.github.lgooddatepicker.components.DatePicker txt_ngaySX;
     protected static javax.swing.JTextField txt_nuocSX;
     protected static javax.swing.JTextField txt_soLuongCanhBao;
     protected static javax.swing.JTextField txt_soLuongDinhMuc1;

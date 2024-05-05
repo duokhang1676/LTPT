@@ -115,7 +115,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 			model_hangHoa.setNumRows(0);
 			for (entities.HangHoa hh : dsHangHoa) {
 				model_hangHoa.addRow(new Object[] {stt,hh.getMaHangHoa(), hh.getTenHangHoa(), hh.getNhomHang().getTenNhomHang(),
-						hh.getSoLuongDinhMuc(), hh.getGiaBan(), hh.getTrangThaiHangHoa()});
+						hh.getSoLuongDinhMuc(), hh.getGiaBan(), hh.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán"});
 				
 				stt++;
 			}
@@ -308,22 +308,37 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			
-			out.writeUTF("TIM_HANGHOA_THEOMA_THEOTEN");
-			out.flush();
-			out.writeUTF(txt_timKiem.getText());
-			out.flush();
-			hangHoa = (entities.HangHoa)in.readObject();
+			String ma = txt_timKiem.getText().trim();
+			String trangThaiHH = cb_trangThai.getSelectedItem().toString().trim();
+			String nhomHang = cb_nhomHang.getSelectedItem().toString().trim();
+			if (ma.isEmpty()) {
+				loadDataTableHangHoa();
+				showMessage("Nhập thông tin cần tìm!");
+				
+			}else {
+				out.writeUTF("TIM_HANGHOA_THEOMA_THEOTEN");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				hangHoa = (entities.HangHoa)in.readObject();
+				
+				if (hangHoa != null) {
+		    		model_hangHoa.setRowCount(0);
+		    		model_hangHoa.addRow(new Object[] {1,hangHoa.getMaHangHoa(), hangHoa.getTenHangHoa(), hangHoa.getNhomHang().getTenNhomHang(),
+		    				hangHoa.getSoLuongDinhMuc(), hangHoa.getGiaBan(), hangHoa.getTrangThaiHangHoa()});
+		    		txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+				}else {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy hàng hóa!");
+					txt_timKiem.requestFocus();
+					txt_timKiem.selectAll();
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	if (hangHoa != null) {
-    		model_hangHoa.setRowCount(0);
-    		model_hangHoa.addRow(new Object[] {1,hangHoa.getMaHangHoa(), hangHoa.getTenHangHoa(), hangHoa.getNhomHang().getTenNhomHang(),
-    				hangHoa.getSoLuongDinhMuc(), hangHoa.getGiaBan(), hangHoa.getTrangThaiHangHoa()});
-		}else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy hàng hóa!");
-		}
+    	
     	
     }//GEN-LAST:event_btn_timKiemActionPerformed
 
@@ -447,7 +462,47 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		if (e.getClickCount() == 2) {
+			AddContent.addContent(new TaoHangHoa());
+			int row = tbl_hangHoa.getSelectedRow();
+	    	String maHH = tbl_hangHoa.getValueAt(row, 1).toString();
+			try (Socket socket = new Socket(ip, port)) {
+
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				
+				out.writeUTF("TIM_HANGHOA_THEOMA");
+				out.flush();
+				out.writeUTF(maHH);
+				out.flush();
+				hangHoa = (entities.HangHoa)in.readObject();
+			
+		    	TaoHangHoa.txt_maHangHoa.setText(hangHoa.getMaHangHoa());
+		    	TaoHangHoa.txt_tenHangHoa1.setText(hangHoa.getTenHangHoa());
+		    	TaoHangHoa.txt_maVach.setText(hangHoa.getMaVach());
+		    	TaoHangHoa.cb_loaiHangHoa.setSelectedItem(hangHoa.getNhaCungCap().getTenNhaCungCap());
+		    	
+		    	TaoHangHoa.cb_nhomHangHoa.setSelectedItem(hangHoa.getNhomHang().getTenNhomHang());
+		    	
+		    	
+		    	TaoHangHoa.txt_soLuongDinhMuc1.setText(String.valueOf(hangHoa.getSoLuongDinhMuc()));
+		    	TaoHangHoa.txt_soLuongCanhBao.setText(String.valueOf(hangHoa.getSoLuongCanhBao()));
+		    	TaoHangHoa.txt_ngaySX.setDate(hangHoa.getNgaySanXuat());
+		    	TaoHangHoa.txt_hanSD.setDate(hangHoa.getHanSuDung());
+		    	TaoHangHoa.txt_giaBan.setText(String.valueOf(hangHoa.getGiaBan()));
+		    	TaoHangHoa.txt_giaNhap.setText(String.valueOf(hangHoa.getGiaNhap()));
+		    	TaoHangHoa.txt_donViTinh.setText(hangHoa.getDonViTinh());
+		    	TaoHangHoa.txt_nuocSX.setText(hangHoa.getNuocSanXuat());
+		    	TaoHangHoa.txt_hangSanXuat.setText(hangHoa.getHangSanXuat());
+		    	TaoHangHoa.txt_moTa.setText(hangHoa.getMoTa());
+		    	TaoHangHoa.txt_vat.setText(String.valueOf(hangHoa.getThue()));
+		    	TaoHangHoa.cb_trangThai.setSelectedItem(hangHoa.getTrangThaiHangHoa().equals(TrangThaiHangHoa.DANG_BAN)?"Đang bán":"Ngừng bán");
+		    	
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 		
 	}
 

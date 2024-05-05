@@ -10,6 +10,7 @@ import entities.ChiTietHoaDon;
 import entities.HangHoa;
 import entities.HoaDon;
 import entities.KhachHang;
+import entities.NhaCungCap;
 import entities.NhanVien;
 import entities.NhomHang;
 import jakarta.persistence.EntityManager;
@@ -18,6 +19,7 @@ import services.EntityManagerFactoryUtil;
 import services.HangHoaService;
 import services.HoaDonService;
 import services.KhachHangService;
+import services.NhaCungCapService;
 import services.NhanVienService;
 import services.NhomHangService;
 
@@ -54,6 +56,7 @@ class ClientHandler implements Runnable {
 	private NhomHangService nhomHangService;
 	private HoaDonService hoaDonService;
 	private ChiTietHoaDonService chiTietHoaDonService;
+	private NhaCungCapService nhaCungCapService;
 
 
 	public ClientHandler(Socket clientSocket) {
@@ -66,6 +69,7 @@ class ClientHandler implements Runnable {
 		this.nhomHangService = new NhomHangService(entityManager);
 		this.hoaDonService = new HoaDonService(entityManager);
 		this.chiTietHoaDonService = new ChiTietHoaDonService(entityManager);
+		this.nhaCungCapService = new NhaCungCapService(entityManager);
 	}
 
 	@Override
@@ -127,6 +131,16 @@ class ClientHandler implements Runnable {
 					break;
 				case "CAPNHAT_DIEMTHUONG":
 					out.writeObject(khachHangService.capNhatDiemThuong(in.readUTF(), in.readInt()));
+					out.flush();
+					break;
+				case "THEM_HANGHOA":
+					boolean rsThemHH = hangHoaService.add((HangHoa)in.readObject());
+					out.writeBoolean(rsThemHH);
+					out.flush();
+					break;
+				case "GET_DANHSACH_NCC":
+					List<NhaCungCap> dsNCC = nhaCungCapService.getAllNCC();
+					out.writeObject(dsNCC);
 					out.flush();
 					break;
 				}

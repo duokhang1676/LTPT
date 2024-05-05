@@ -50,9 +50,9 @@ public class HangHoa implements Serializable{
 	private LocalDate hanSuDung;
 	private TrangThaiHangHoa trangThaiHangHoa;
 	public HangHoa(String maHangHoa, String tenHangHoa, NhomHang nhomHang, String nuocSanXuat, String hangSanXuat,
-			String moTa, double thue, String maVach, int soLuongDinhMuc, int soLuongCanhBao,
-			String donViTinh, double giaNhap, double giaBan, NhaCungCap nhaCungCap, LocalDate ngaySanXuat,
-			LocalDate hanSuDung, TrangThaiHangHoa trangThaiHangHoa) {
+			String moTa, double thue, String maVach, int soLuongDinhMuc, int soLuongCanhBao, String donViTinh,
+			double giaNhap, double giaBan, NhaCungCap nhaCungCap, LocalDate ngaySanXuat, LocalDate hanSuDung,
+			TrangThaiHangHoa trangThaiHangHoa) {
 		super();
 		this.maHangHoa = maHangHoa;
 		this.tenHangHoa = tenHangHoa;
@@ -72,8 +72,6 @@ public class HangHoa implements Serializable{
 		this.hanSuDung = hanSuDung;
 		this.trangThaiHangHoa = trangThaiHangHoa;
 	}
-	
-	
 	public HangHoa(String tenHangHoa, NhomHang nhomHang, String nuocSanXuat, String hangSanXuat, String moTa,
 			double thue, String maVach, int soLuongDinhMuc, int soLuongCanhBao, String donViTinh, double giaNhap,
 			double giaBan, NhaCungCap nhaCungCap, LocalDate ngaySanXuat, LocalDate hanSuDung,
@@ -96,19 +94,8 @@ public class HangHoa implements Serializable{
 		this.hanSuDung = hanSuDung;
 		this.trangThaiHangHoa = trangThaiHangHoa;
 	}
-
-
 	public HangHoa() {
 		super();
-	}
-	@Override
-	public String toString() {
-		return "HangHoa [maHangHoa=" + maHangHoa + ", tenHangHoa=" + tenHangHoa + ", nhomHang=" + nhomHang
-				+ ", nuocSanXuat=" + nuocSanXuat + ", hangSanXuat=" + hangSanXuat
-				+ ", moTa=" + moTa + ", thue=" + thue + ", maVach=" + maVach + ", soLuongDinhMuc=" + soLuongDinhMuc
-				+ ", soLuongCanhBao=" + soLuongCanhBao + ", donViTinh=" + donViTinh + ", giaNhap=" + giaNhap
-				+ ", giaBan=" + giaBan + ", nhaCungCap=" + nhaCungCap + ", ngaySanXuat=" + ngaySanXuat + ", hanSuDung="
-				+ hanSuDung + ", trangThaiHangHoa=" + trangThaiHangHoa + "]";
 	}
 	public String getMaHangHoa() {
 		return maHangHoa;
@@ -215,5 +202,15 @@ public class HangHoa implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	@Override
+	public String toString() {
+		return "HangHoa [maHangHoa=" + maHangHoa + ", tenHangHoa=" + tenHangHoa + ", nhomHang=" + nhomHang
+				+ ", nuocSanXuat=" + nuocSanXuat + ", hangSanXuat=" + hangSanXuat + ", moTa=" + moTa + ", thue=" + thue
+				+ ", maVach=" + maVach + ", soLuongDinhMuc=" + soLuongDinhMuc + ", soLuongCanhBao=" + soLuongCanhBao
+				+ ", donViTinh=" + donViTinh + ", giaNhap=" + giaNhap + ", giaBan=" + giaBan + ", nhaCungCap="
+				+ nhaCungCap + ", ngaySanXuat=" + ngaySanXuat + ", hanSuDung=" + hanSuDung + ", trangThaiHangHoa="
+				+ trangThaiHangHoa + "]";
+	}
+	
 	
 }

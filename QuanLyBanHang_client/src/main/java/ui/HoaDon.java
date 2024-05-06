@@ -6,19 +6,39 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import components.AddContent;
+import components.ConnectServer;
+import components.Formater;
 import components.ResizeContent;
+import entities.TrangThaiHoaDon;
 
 
 /**
@@ -29,6 +49,7 @@ public class HoaDon extends javax.swing.JPanel {
 
     private DefaultTableModel model_hoaDon;
 	private JTable tbl_hoaDon;
+	
 
 	/**
      * Creates new form NewJPanel
@@ -37,10 +58,177 @@ public class HoaDon extends javax.swing.JPanel {
         initComponents();
         ResizeContent.resizeContent(this);
         addTableHoaDon();
-     
+        dpTuNgay.setDate(LocalDate.now());
+		dbDenNgay.setDate(LocalDate.now());
+        getFromTo();
+        txtTongSoHoaDon.setText(dsHD.size()+"");
+        phimTat();
+        showCTHD();
     }
 
     
+    private void showCTHD() {
+		// TODO Auto-generated method stub
+    	tbl_hoaDon.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		// TODO Auto-generated method stub
+        		if(e.getClickCount()>=2) {
+        			int row = tbl_hoaDon.getSelectedRow();
+        			entities.HoaDon hd = dsHD.get(row);
+        			ChiTietHoaDonPage cthd = new ChiTietHoaDonPage();
+        			cthd.khachHang = dsHD.get(row).getKhachHang();
+        			cthd.nhanVien = dsHD.get(row).getNhanVien();
+        			cthd.hoaDon = dsHD.get(row);
+        			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss");
+        			cthd.lblThoiGian.setText("Thời gian tạo: "+cthd.hoaDon.getThoiGianLapHoaDon().format(formatter));
+        			cthd.txtMaHD.setText(hd.getMaHoaDon());
+        			TrangThaiHoaDon tt = hd.getTrangThaiHoaDon();
+        			if(tt == TrangThaiHoaDon.HOAN_THANH)
+        				cthd.txtTrangThai.setText("Hoàn thành");
+        			else if(tt == TrangThaiHoaDon.THEM_TAM)
+        				cthd.txtTrangThai.setText("Thêm tạm");
+        			else
+        				cthd.txtTrangThai.setText("Đã hủy");
+        			
+        			if(hd.getNhanVien()!=null)
+        				cthd.txtNV.setText(hd.getNhanVien().getTenNhanVien()+" - "+hd.getNhanVien().getMaNhanVien());
+        			if(hd.getKhachHang()!=null) {
+        				cthd.txtTenKH.setText(hd.getKhachHang().getTenKhachHang()+" - "+hd.getKhachHang().getMaKhachHang());
+        				cthd.txtSDTKH.setText(hd.getKhachHang().getSoDienThoai());
+        			}else 
+        				cthd.txtTenKH.setText("Vãng lai");
+        			cthd.txtTongTien.setText(Formater.decimalFormat(hd.getTongTien()));
+        			cthd.txtDiemQuyDoi.setText(Formater.decimalFormat(hd.getDiemQuyDoi()));
+        			cthd.txtTienGiam.setText(Formater.decimalFormat(hd.getDiemQuyDoi()));
+        			cthd.txtTienTra.setText(Formater.decimalFormat(hd.getThanhTien()));
+        			cthd.txtTienDua.setText(Formater.decimalFormat(hd.getTienKhachDua()));
+        			cthd.txtTienThua.setText(Formater.decimalFormat(hd.getTienThua()));
+        			cthd.txtGhiChu.setText(hd.getGhiChu());
+        			if(tt == TrangThaiHoaDon.HOAN_THANH) {
+        				
+        				cthd.txtTienDua.setEditable(false);
+        				cthd.txtGhiChu.setEditable(false);
+        			}else if(tt==TrangThaiHoaDon.THEM_TAM) {
+        				cthd.btnThanhToan.setText("Thanh toán và in hóa đơn");
+        			}else {
+        				cthd.btnThanhToan.setVisible(false);
+        				cthd.btnHuyHD.setVisible(false);
+        			}
+        			cthd.loadCTHD();
+        			
+        			
+        			
+        			AddContent.addContent(cthd);
+        		}
+        	}
+		});
+	}
+
+
+	private void addToTable() {
+    	model_hoaDon.setRowCount(0);
+    	int stt = 1;
+    	 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss");
+		for (entities.HoaDon hd : dsHD) {
+			String time = hd.getThoiGianLapHoaDon().format(formatter);
+			model_hoaDon.addRow(new Object[] {stt++,hd.getMaHoaDon(),hd.getKhachHang()==null?"Vãng lai":hd.getKhachHang().getTenKhachHang(),hd.getNhanVien()==null?"":hd.getNhanVien().getTenNhanVien(),time,Formater.decimalFormat(hd.getThanhTien()),hd.getTrangThaiHoaDon(),hd.getGhiChu()});
+		}
+		txtTongSoHoaDon.setText(dsHD.size()+"");
+    }
+    private void phimTat() {
+    	// Tạo một Action và gán chức năng khi nhấn phím 
+    
+        Action action = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	timTheoTuKhoa1.requestFocus();
+            	timTheoTuKhoa1.selectAll();
+            }
+        };
+        
+     // Gắn hành động với phím tắt 
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), "performF4Action");
+        this.getActionMap().put("performF4Action", action);
+    }
+    private void getHDbyMa() {
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_HOADON_THEOMA");
+			out.flush();
+			out.writeUTF(timTheoTuKhoa1.getText());
+			out.flush();
+			entities.HoaDon hd = (entities.HoaDon)in.readObject();
+			if(hd!=null) {
+				if(dsHD!=null)dsHD.clear();
+				dsHD.add(hd);
+				addToTable();
+				timTheoTuKhoa1.requestFocus();
+				timTheoTuKhoa1.selectAll();
+			}else {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn");
+				timTheoTuKhoa1.requestFocus();
+				timTheoTuKhoa1.selectAll();
+			}
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    private void getFromTo() {
+    	if(dsHD!=null)dsHD.clear();
+    	int ttInt = cbTrangThai.getSelectedIndex();
+		TrangThaiHoaDon tt = TrangThaiHoaDon.HOAN_THANH;
+		if(ttInt == 1)tt = TrangThaiHoaDon.THEM_TAM;
+		else if(ttInt == 2)tt = TrangThaiHoaDon.DA_HUY;
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_HOADON_THEOTG");
+			out.flush();
+			out.writeObject(dpTuNgay.getDate());
+			out.flush();
+			out.writeObject(dbDenNgay.getDate());
+			out.flush();
+			out.writeObject(tt);
+			out.flush();
+
+			dsHD = (List<entities.HoaDon>)in.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(dsHD!=null) {
+			addToTable();
+		}
+    }
+	private void getAll() {
+		// TODO Auto-generated method stub
+		if(dsHD!=null)dsHD.clear();
+		int ttInt = cbTrangThai.getSelectedIndex();
+		TrangThaiHoaDon tt = TrangThaiHoaDon.HOAN_THANH;
+		if(ttInt == 1)tt = TrangThaiHoaDon.THEM_TAM;
+		else if(ttInt == 2)tt = TrangThaiHoaDon.DA_HUY;
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_ALL_HOADON");
+			out.flush();
+			out.writeObject(tt);
+			out.flush();
+			dsHD = (List<entities.HoaDon>)in.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(dsHD!=null) {
+			addToTable();
+		}
+	}
+
+
 
 	private void addTableHoaDon() {
 		// TODO Auto-generated method stub
@@ -125,9 +313,14 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         lblLocTheoThoiGian.setText("Lọc theo thời gian");
         lblLocTheoThoiGian.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
 
-        cbLocTheoThoiGian.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hôm nay", "Hôm qua", "7 ngày trước", "30 ngày trước", "Tháng này", "Tháng trước", "Năm này", "Năm trước" }));
+        cbLocTheoThoiGian.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hôm nay", "Hôm qua", "7 ngày trước", "Tháng này", "Tháng trước", "Năm này", "Năm trước", "Tất cả" }));
         cbLocTheoThoiGian.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         cbLocTheoThoiGian.setPreferredSize(new java.awt.Dimension(115, 25));
+        cbLocTheoThoiGian.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbLocTheoThoiGianActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -288,6 +481,11 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
         btnTimKiem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/icons8-find-24.png"))); // NOI18N
         btnTimKiem.setText("Tìm kiếm");
         btnTimKiem.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        btnTimKiem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTimKiemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -364,9 +562,74 @@ String[] colNames = {"STT","Mã hóa đơn", "Khách hàng", "Nhân viên bán h
 
     private void timTheoTuKhoa1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timTheoTuKhoa1ActionPerformed
         // TODO add your handling code here:
+    	if(!timTheoTuKhoa1.getText().equalsIgnoreCase(""))
+    		getHDbyMa();
     }//GEN-LAST:event_timTheoTuKhoa1ActionPerformed
 
+    private void cbLocTheoThoiGianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbLocTheoThoiGianActionPerformed
+        // TODO add your handling code here:
+    	int i = cbLocTheoThoiGian.getSelectedIndex();
+    	LocalDate now = LocalDate.now();
+    	// Lấy ngày đầu tháng
+        LocalDate firstDayOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
+        // Lấy ngày bắt đầu của tháng trước
+        LocalDate firstDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+        // Lấy ngày kết thúc của tháng trước
+        LocalDate lastDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+     // Lấy ngày bắt đầu của năm trước
+        LocalDate firstDayOfLastYear = now.minusYears(1).with(TemporalAdjusters.firstDayOfYear());
+        // Lấy ngày kết thúc của năm trước
+        LocalDate lastDayOfLastYear = now.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
+     // Lấy ngày bắt đầu của năm nay
+        LocalDate firstDayOfYear = now.with(TemporalAdjusters.firstDayOfYear());
+        
+    	if(i==0) {
+    		dpTuNgay.setDate(now);
+    		dbDenNgay.setDate(now);
+    	}else if(i==1) {
+    		dpTuNgay.setDate(now.minusDays(1));
+    		dbDenNgay.setDate(now.minusDays(1));
+    	}else if(i==2) {
+    		dpTuNgay.setDate(now.minusDays(7));
+    		dbDenNgay.setDate(now);
+    	}else if(i==3) {
+    		dpTuNgay.setDate(firstDayOfMonth);
+    		dbDenNgay.setDate(now);
+    	}else if(i==4) {
+    		dpTuNgay.setDate(firstDayOfLastMonth);
+    		dbDenNgay.setDate(lastDayOfLastMonth);
+    	}else if(i==5) {
+    		dpTuNgay.setDate(firstDayOfYear);
+    		dbDenNgay.setDate(now);
+    	}else if(i==6) {
+    		dpTuNgay.setDate(firstDayOfLastYear);
+    		dbDenNgay.setDate(lastDayOfLastYear);
+    	}else {
+    		dpTuNgay.setText("");
+    		dbDenNgay.setText("");
+    	}
+    		
+    	
+    }//GEN-LAST:event_cbLocTheoThoiGianActionPerformed
 
+    private void btnTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimKiemActionPerformed
+        // TODO add your handling code here:
+    	if(!timTheoTuKhoa1.getText().equalsIgnoreCase("")) {
+    		getHDbyMa();
+    	}else {
+    		try {
+				dpTuNgay.getDate();
+				dbDenNgay.getDate();
+				getFromTo();
+			} catch (Exception e) {
+				// TODO: handle exception
+				getAll();
+			}
+    	}
+    }//GEN-LAST:event_btnTimKiemActionPerformed
+    
+
+    private List<entities.HoaDon> dsHD = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnTimKiem;
     private javax.swing.JComboBox<String> cbLocTheoThoiGian;

@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDate;
 import java.util.List;
 
 import entities.ChiTietHoaDon;
@@ -13,6 +14,7 @@ import entities.KhachHang;
 import entities.NhaCungCap;
 import entities.NhanVien;
 import entities.NhomHang;
+import entities.TrangThaiHoaDon;
 import jakarta.persistence.EntityManager;
 import services.ChiTietHoaDonService;
 import services.EntityManagerFactoryUtil;
@@ -138,6 +140,31 @@ class ClientHandler implements Runnable {
 				case "GET_DANHSACH_NCC":
 					List<NhaCungCap> dsNCC = nhaCungCapService.getAllNCC();
 					out.writeObject(dsNCC);
+					out.flush();
+					break;
+				case "GET_ALL_HOADON":
+					List<HoaDon> dsHD = hoaDonService.getAll((TrangThaiHoaDon)in.readObject());
+					out.writeObject(dsHD);
+					out.flush();
+					break;
+				case "GET_HOADON_THEOTG":
+					List<HoaDon> dsHD1 = hoaDonService.locHDTheoTG((LocalDate)in.readObject(), (LocalDate)in.readObject(), (TrangThaiHoaDon)in.readObject());
+					out.writeObject(dsHD1);
+					out.flush();
+					break;
+				case "GET_HOADON_THEOMA":
+					HoaDon hoaDon = hoaDonService.timHDTheoMa(in.readUTF());
+					out.writeObject(hoaDon);
+					out.flush();
+					break;
+				case "GET_CTHD_THEOMAHD":
+					List<ChiTietHoaDon> dsCTHD = chiTietHoaDonService.getDSCTHDTheoMaHD((HoaDon)in.readObject());
+					out.writeObject(dsCTHD);
+					out.flush();
+					break;
+				case "UPDATE_HOADON":
+					temp = hoaDonService.updateHoaDon((HoaDon)in.readObject());
+					out.writeBoolean(temp);
 					out.flush();
 					break;
 				}

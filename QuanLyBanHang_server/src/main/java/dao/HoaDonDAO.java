@@ -8,7 +8,8 @@ import entities.TrangThaiHoaDon;
 
 public interface HoaDonDAO {
 	public boolean themHoaDon(HoaDon hd);
-	public List<HoaDon> getAll();
+	public List<HoaDon> getAll(TrangThaiHoaDon tt);
 	public HoaDon timHDTheoMa(String ma);
-	public HoaDon locHDTheoTGvaTT(LocalDate from, LocalDate to, TrangThaiHoaDon tt);
+	public List<HoaDon> locHDTheoTG(LocalDate from, LocalDate to, TrangThaiHoaDon tt);
+	public boolean updateHoaDon(HoaDon hd);
 }

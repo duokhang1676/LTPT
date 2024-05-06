@@ -264,7 +264,7 @@ public class DangNhap extends javax.swing.JFrame {
         });
         jP_loginArea.add(btn_dangNhap, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 250, -1, -1));
 
-        jLabel2.setText("* By Nhom_02 PhatTrienUngDung DHKHMT17CTT");
+//        jLabel2.setText("* By Nhom_02 PhatTrienUngDung DHKHMT17CTT");
         jP_loginArea.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 340, -1, -1));
 
         txtMatKhau.setText("txtMatKhau");
@@ -318,10 +318,10 @@ public class DangNhap extends javax.swing.JFrame {
 
     private void btn_dangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dangNhapActionPerformed
         // TODO add your handling code here
-//    	if(!KiemTraDangNhap()) {
-//    		
-//    		return;
-//    	}
+    	if(!KiemTraDangNhap()) {
+    		
+    		return;
+    	}
     		
     	
         this.setVisible(false);

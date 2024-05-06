@@ -7,5 +7,6 @@ import entities.NhanVien;
 public interface NhanVienDAO {
 	public boolean add(NhanVien nv);
 	public List<NhanVien> getAllKV();
-	public NhanVien timNVTheoMa(String maNV);
+	public NhanVien timNVTheoMaHoacSDT(String ma);
+	public boolean update(NhanVien nv);
 }

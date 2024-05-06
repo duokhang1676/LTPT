@@ -6,25 +6,43 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.time.LocalDate;
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import components.ConnectServer;
 import components.ResizeContent;
+import entities.TrangThaiKhachHang;
+import entities.TrangThaiNCC;
 
 
 /**
  *
  * @author Admin
  */
-public class KhachHang extends javax.swing.JPanel {
+public class KhachHang extends javax.swing.JPanel implements MouseListener{
 
    
 	private DefaultTableModel model_KH;
 	private JTable tbl_KH;
+	private String ip=ConnectServer.ip;
+	private int port=ConnectServer.port;
+	private List<entities.KhachHang> dsKH;
+	private entities.KhachHang n;
+    private entities.KhachHang kh;
 	/**
      * Creates new form NhanVien_httk
      */
@@ -33,13 +51,43 @@ public class KhachHang extends javax.swing.JPanel {
         ResizeContent.resizeContent(this);
         pnl_left.setVisible(false);
         addTableNV();
+        loadDataKH();
    
     }
     
 
+	private void loadDataKH() {
+		// TODO Auto-generated method stub
+		try (Socket socket = new Socket(ip, port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_DANHSACH_KH");
+			out.flush();
+			dsKH =(List<entities.KhachHang>) in.readObject();
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if (dsKH!=null) {
+			int stt = 1;
+			model_KH.setRowCount(0);
+			for (entities.KhachHang n : dsKH) {
+				//"STT","Mã Nhân Viên", "Họ và Tên", "Tổng Tiền Bán",  "Số điện thoại","Ghi chú","Trạng thái"
+				model_KH.addRow(new Object[] {stt, n.getMaKhachHang(), n.getTenKhachHang(), n.getNgaySinh(), n.getSoDienThoai(),
+						n.getNgayTao(),n.isGioiTinh() == false?"Nam":"Nữ", n.getGhiChu(), n.getTrangThaiKH().equals(TrangThaiKhachHang.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động"});
+				stt++;
+			}
+		}
+	}
+
+
 	private void addTableNV() {
 		// TODO Auto-generated method stub
-    	String[] colNames = {"STT","Mã Nhân Viên", "Họ và Tên", "Tổng Tiền Bán",  "Số điện thoại","Ghi chú","Trạng thái"};
+    	String[] colNames = {"STT","Mã Khách Hàng", "Họ và Tên", "Ngày sinh","Số điện thoại","Ngày tạo","Giới tính","Ghi chú","Trạng thái"};
         
         model_KH = new DefaultTableModel(colNames, 0);
         tbl_KH = new JTable(model_KH);
@@ -53,18 +101,29 @@ public class KhachHang extends javax.swing.JPanel {
         	tbl_KH.getColumnModel().getColumn(4).setResizable(false);
         	tbl_KH.getColumnModel().getColumn(5).setResizable(false);
         	tbl_KH.getColumnModel().getColumn(6).setResizable(false);
-            
+        	tbl_KH.getColumnModel().getColumn(7).setResizable(false);
+        	tbl_KH.getColumnModel().getColumn(8).setResizable(false);
         }
         
         JTableHeader headerTable =  tbl_KH.getTableHeader();
 		headerTable.setPreferredSize(new Dimension(headerTable.getPreferredSize().width, 40));
 		tbl_KH.setRowHeight(40);
-//		setCellEditable();
+		setCellEditable();
         pnlCenter.add(js_tableNV, BorderLayout.CENTER);
-        
+        tbl_KH.addMouseListener(this);
 //        tbl_hangHoa.addMouseListener(this);
 	}
-
+	public void setCellEditable() {
+		for (int i = 0; i < tbl_KH.getColumnCount(); i++) {
+			tbl_KH.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(new JTextField()) {
+					@Override
+					public boolean isCellEditable(EventObject e) {
+						// Trả về false để ngăn chặn chỉnh sửa trực tiếp
+						return false;
+					}
+				});
+			}
+	}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -102,6 +161,7 @@ public class KhachHang extends javax.swing.JPanel {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel17 = new javax.swing.JLabel();
         txtSoDienThoai1 = new javax.swing.JTextField();
+        btn_capNhat = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlNorth = new javax.swing.JPanel();
         btn_Tim = new javax.swing.JButton();
@@ -244,6 +304,13 @@ public class KhachHang extends javax.swing.JPanel {
         txtSoDienThoai1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         txtSoDienThoai1.setPreferredSize(new java.awt.Dimension(64, 35));
 
+        btn_capNhat.setText("Cập nhật");
+        btn_capNhat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_capNhatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlFormLayout = new javax.swing.GroupLayout(pnlForm);
         pnlForm.setLayout(pnlFormLayout);
         pnlFormLayout.setHorizontalGroup(
@@ -292,8 +359,10 @@ public class KhachHang extends javax.swing.JPanel {
                         .addComponent(jLabel4)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(pnlFormLayout.createSequentialGroup()
-                        .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(pnlFormLayout.createSequentialGroup()
+                                .addComponent(btn_capNhat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
                                 .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(27, 27, 27)
                                 .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -356,7 +425,8 @@ public class KhachHang extends javax.swing.JPanel {
                         .addGap(39, 39, 39)
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_capNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(51, 51, 51)
                 .addComponent(pnlFooter, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(143, Short.MAX_VALUE))
@@ -476,19 +546,137 @@ public class KhachHang extends javax.swing.JPanel {
 
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LuuActionPerformed
         // TODO add your handling code here:
+    	
+    	//them kh
+    	if (validData()) {
+			try (Socket socket = new Socket(ip, port)){
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+    			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+    			
+    			String tenKH = txtTenNhanVien.getText();
+    			String soDT = txtSoDienThoai.getText();
+    			LocalDate ngaySinh = datePicker1.getDate();
+    			LocalDate ngayTao = datePicker2.getDate();
+    			Boolean gioiTinh = false;
+    			if (jRadioButton1.isSelected()) {
+					gioiTinh = true;
+				}else {
+					gioiTinh = false;
+				}
+    			String ghiChu = jTextArea1.getText();
+    			TrangThaiKhachHang trangThai = null;
+    	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+    	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+    	    		trangThai = TrangThaiKhachHang.DANG_HOAT_DONG;
+    			}else {
+    				trangThai = TrangThaiKhachHang.NGUNG_HOAT_DONG;
+    			}
+    	    	
+    	    	entities.KhachHang kh = new entities.KhachHang("", tenKH, ngaySinh, gioiTinh, soDT, 0, ngayTao, ghiChu, trangThai);
+    	    	
+    	    	out.writeUTF("THEM_KH");
+    			out.flush();
+    			out.writeObject(kh);
+    			out.flush();
+    			
+    			if (in.readBoolean()) {
+    				showMessage("Thêm khách hàng mới thành công!");
+    				loadDataKH();
+    			}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+    	}
     }//GEN-LAST:event_btn_LuuActionPerformed
 
-    private void txtTenNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNhanVienActionPerformed
+    private boolean validData() {
+		// TODO Auto-generated method stub
+    	String hoTen = txtTenNhanVien.getText().trim();
+    	String sdt = txtSoDienThoai.getText().trim();
+    	if (hoTen.length() <= 0) {
+			showMessage("Họ tên khách hàng không được để trống!");
+			return false;
+		}
+    	if (sdt.length()<=0) {
+			showMessage("Số điện thoại không được để trống!");
+			return false;
+		}
+		return true;
+	}
+
+
+	private void txtTenNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNhanVienActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTenNhanVienActionPerformed
 
     private void btn_TimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TimActionPerformed
         // TODO add your handling code here:
+    	//timkiem
+    	try (Socket socket = new Socket(ip, port)) {
+
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String ma = jTextField1.getText().trim();
+			
+			if (ma.isEmpty()) {
+				loadDataKH();
+				showMessage("Nhập thông tin cần tìm!");
+				
+			}else {
+				out.writeUTF("TIM_KHACHHANG_THEOMA");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				n = (entities.KhachHang)in.readObject();
+				
+				if (n != null) {
+					model_KH.setRowCount(0);
+					model_KH.addRow(new Object[] {1, n.getMaKhachHang(), n.getTenKhachHang(), n.getNgaySinh(), n.getSoDienThoai(),n.getNgayTao(),
+							n.getGhiChu(), n.getTenKhachHang().equals(TrangThaiKhachHang.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động"});
+		    		jTextField1.requestFocus();
+		    		jTextField1.selectAll();
+				}else {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
+					jTextField1.requestFocus();
+					jTextField1.selectAll();
+					loadDataKH();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
     }//GEN-LAST:event_btn_TimActionPerformed
 
-    private void btn_DongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DongActionPerformed
+    private void showMessage(String string) {
+		// TODO Auto-generated method stub
+		JOptionPane.showMessageDialog(this, string);
+	}
+
+
+	private void btn_DongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DongActionPerformed
         // TODO add your handling code here:
-        pnl_left.setVisible(false);
+		pnl_left.setVisible(false);
+        btn_Luu.setVisible(true);
+        
+        txt_maNhanVien.setText("");
+        txtTenNhanVien.setText("");
+		txtSoDienThoai.setText("");
+		datePicker1.setText("");
+		datePicker2.setText("");
+		
+		txtSoDienThoai1.setText("");
+		
+		jRadioButton1.setSelected(false);
+		jRadioButton2.setSelected(false);
+		jTextArea1.setText("");
+		
+    	jComboBox2.setSelectedIndex(0);
+    	loadDataKH();
+    	
     }//GEN-LAST:event_btn_DongActionPerformed
 
     private void txt_maNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_maNhanVienActionPerformed
@@ -510,11 +698,53 @@ public class KhachHang extends javax.swing.JPanel {
     private void btn_Tim1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Tim1ActionPerformed
         // TODO add your handling code here:
         pnl_left.setVisible(true);
+        btn_capNhat.setVisible(false);
     }//GEN-LAST:event_btn_Tim1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void btn_capNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_capNhatActionPerformed
+        // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)){
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String maKH = txt_maNhanVien.getText();
+			String tenKH = txtTenNhanVien.getText();
+			String soDT = txtSoDienThoai.getText();
+			LocalDate ngaySinh = datePicker1.getDate();
+			LocalDate ngayTao = datePicker2.getDate();
+			Boolean gioiTinh = false;
+			if (jRadioButton1.isSelected()) {
+				gioiTinh = true;
+			}else {
+				gioiTinh = false;
+			}
+			String ghiChu = jTextArea1.getText();
+			TrangThaiKhachHang trangThai = null;
+	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+	    		trangThai = TrangThaiKhachHang.DANG_HOAT_DONG;
+			}else {
+				trangThai = TrangThaiKhachHang.NGUNG_HOAT_DONG;
+			}
+	    	
+	    	entities.KhachHang kh = new entities.KhachHang(maKH, tenKH, ngaySinh, gioiTinh, soDT, 0, ngayTao, ghiChu, trangThai);
+	    	
+	    	out.writeUTF("CAPNHAT_KHACHHANG");
+			out.flush();
+			out.writeObject(kh);
+			out.flush();
+			
+			showMessage("Cập nhật thành công!");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+    }//GEN-LAST:event_btn_capNhatActionPerformed
     public void setPnlRightTrue(){
         pnl_left.setVisible(true);
         txtTenNhanVien.requestFocus();
@@ -525,6 +755,7 @@ public class KhachHang extends javax.swing.JPanel {
     private javax.swing.JButton btn_Luu;
     private javax.swing.JButton btn_Tim;
     private javax.swing.JButton btn_Tim1;
+    private javax.swing.JButton btn_capNhat;
     private com.github.lgooddatepicker.components.DatePicker datePicker1;
     private com.github.lgooddatepicker.components.DatePicker datePicker2;
     private javax.swing.JComboBox<String> jComboBox2;
@@ -561,4 +792,77 @@ public class KhachHang extends javax.swing.JPanel {
     private javax.swing.JTextField txtTenNhanVien;
     private javax.swing.JTextField txt_maNhanVien;
     // End of variables declaration//GEN-END:variables
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// 
+		if (e.getClickCount() == 2) {
+			pnl_left.setVisible(true);
+			btn_Luu.setVisible(false);
+			btn_capNhat.setVisible(true);
+			int row = tbl_KH.getSelectedRow();
+	    	String ma = tbl_KH.getValueAt(row, 1).toString();
+			try (Socket socket = new Socket(ip, port)) {
+
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				
+				out.writeUTF("TIM_KHACHHANG_THEOMA");
+				out.flush();
+				out.writeUTF(ma);
+				out.flush();
+				kh = (entities.KhachHang)in.readObject();
+			
+		    	txt_maNhanVien.setText(kh.getMaKhachHang());
+		    	txtTenNhanVien.setText(kh.getTenKhachHang());
+		    	Boolean gioiTinh = kh.isGioiTinh();
+		    	if (gioiTinh) {
+					jRadioButton1.setSelected(true);
+					jRadioButton2.setSelected(false);
+				}else {
+					jRadioButton1.setSelected(false);
+					jRadioButton2.setSelected(true);
+				}
+		    	txtSoDienThoai1.setText(String.valueOf(kh.getDiemThuong()));
+		    	txtSoDienThoai.setText(kh.getSoDienThoai());
+		    	datePicker1.setDate(kh.getNgaySinh());
+		    	datePicker2.setDate(kh.getNgayTao());
+		    	jComboBox2.setSelectedItem(kh.getTrangThaiKH().equals(TrangThaiKhachHang.DANG_HOAT_DONG)?"Đang hoạt động":"Ngừng hoạt động");
+		    	jTextArea1.setText(kh.getGhiChu());
+		    	
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

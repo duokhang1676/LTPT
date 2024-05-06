@@ -98,8 +98,13 @@ class ClientHandler implements Runnable {
 					out.flush();
 					break;
 				case "TIM_NHANVIEN_THEOMA":
-					NhanVien nhanVien = nhanVienService.timNVTheoMa(in.readUTF());
+					NhanVien nhanVien = nhanVienService.timNVTheoMaHoacSDT(in.readUTF());
 					out.writeObject(nhanVien);
+					out.flush();
+					break;
+				case "TIM_NCC_THEOMA_THEOTEN":
+					NhaCungCap ncc = nhaCungCapService.timNCCTheoMaTheoTen(in.readUTF());
+					out.writeObject(ncc);
 					out.flush();
 					break;
 				case "GET_DANHSACH_HANGHOA":
@@ -117,7 +122,6 @@ class ClientHandler implements Runnable {
 					out.writeObject(hangHoa1);
 					out.flush();
 					break;
-
 				case "THEM_HOADON":
 					boolean temp = hoaDonService.themHoaDon((HoaDon)in.readObject());
 					out.writeBoolean(temp);
@@ -132,6 +136,10 @@ class ClientHandler implements Runnable {
 				case "CAPNHAT_KHACHHANG":
 					khachHangService.updateKH((KhachHang)in.readObject());
 					break;
+				case "CAPNHAT_NCC":
+					nhaCungCapService.update((NhaCungCap)in.readObject());
+				case "CAPNHAT_NV":
+					nhanVienService.update((NhanVien)in.readObject());
 				case "THEM_HANGHOA":
 					boolean rsThemHH = hangHoaService.add((HangHoa)in.readObject());
 					out.writeBoolean(rsThemHH);
@@ -165,6 +173,31 @@ class ClientHandler implements Runnable {
 				case "UPDATE_HOADON":
 					temp = hoaDonService.updateHoaDon((HoaDon)in.readObject());
 					out.writeBoolean(temp);
+					out.flush();
+					break;
+				case "THEM_NCC":
+					boolean rsThemNCC = nhaCungCapService.addNCC((NhaCungCap)in.readObject());
+					out.writeBoolean(rsThemNCC);
+					out.flush();
+					break;
+				case "GET_DANHSACH_KH":
+					List<KhachHang> dsKH = khachHangService.getAllKH();
+					out.writeObject(dsKH);
+					out.flush();
+					break;
+				case "THEM_KH":
+					boolean rsThemKH = khachHangService.add((KhachHang)in.readObject());
+					out.writeBoolean(rsThemKH);
+					out.flush();
+					break;
+				case "GET_DANHSACH_NV":
+					List<NhanVien> dsNV = nhanVienService.getAllKV();
+					out.writeObject(dsNV);
+					out.flush();
+					break;
+				case "THEM_NV":
+					boolean rsThemNV = nhanVienService.add((NhanVien)in.readObject());
+					out.writeBoolean(rsThemNV);
 					out.flush();
 					break;
 				}

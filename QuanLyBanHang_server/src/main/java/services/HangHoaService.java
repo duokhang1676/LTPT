@@ -62,9 +62,17 @@ public class HangHoaService implements HangHoaDAO{
 	@Override
 	public HangHoa timHangHoaTheoMaHoacTen(String maTenHH) {
 		// TODO Auto-generated method stub
-		return entityManager.createQuery("Select h from HangHoa h where h.maHangHoa = :name or h.tenHangHoa = :name", HangHoa.class)
-				.setParameter("name", maTenHH)
-				.getSingleResult();
+		try {
+			HangHoa hhTim = entityManager.createQuery("Select h from HangHoa h where h.maHangHoa = :name or h.tenHangHoa = :name", HangHoa.class)
+			.setParameter("name", maTenHH)
+			.getSingleResult();
+			
+			return hhTim;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override

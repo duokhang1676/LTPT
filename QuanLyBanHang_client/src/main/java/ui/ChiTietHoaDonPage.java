@@ -111,7 +111,7 @@ public class ChiTietHoaDonPage extends javax.swing.JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(dsCTHD);
+
 		if(dsCTHD!=null) {
 			for (ChiTietHoaDon cthd : dsCTHD) {
 				HangHoa hh = cthd.getHangHoa();

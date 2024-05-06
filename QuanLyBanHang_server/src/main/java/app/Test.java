@@ -5,6 +5,7 @@ import java.util.List;
 
 import dao.HoaDonDAO;
 import entities.TrangThaiHoaDon;
+import entities.HangHoa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 import services.EntityManagerFactoryUtil;
@@ -43,7 +44,6 @@ public class Test {
 //		HangHoa hh = new HangHoa("","HH01", nHang, null, null, null, 0, "MV00004", 0, 0, null, 0, 0, null, null, null, null);
 //		boolean rs_addHH = hangHoaDao.add(hh);
 //		System.out.println(rs_addHH);
-		//System.out.println(hoaDonDao.getAll(TrangThaiHoaDon.HOAN_THANH));
-		System.out.println(hoaDonDao.locHDTheoTG(LocalDate.now(), LocalDate.now(), TrangThaiHoaDon.HOAN_THANH));
+
 	}
 }

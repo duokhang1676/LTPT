@@ -4,8 +4,17 @@
  */
 package ui;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import javax.swing.JOptionPane;
+
 import components.AddContent;
+import components.ConnectServer;
+import components.LoginInfo;
 import components.ResizeContent;
+import entities.NhanVien;
 
 /**
  *
@@ -13,7 +22,9 @@ import components.ResizeContent;
  */
 public class DoiMatKhau extends javax.swing.JPanel {
 
-    /**
+    private String ip = ConnectServer.ip;
+	private int port = ConnectServer.port;
+	/**
      * Creates new form TaiKhoan
      */
     public DoiMatKhau() {
@@ -221,9 +232,48 @@ public class DoiMatKhau extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)) {
+    		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			NhanVien nv = LoginInfo.nhanVien;
+			
+			String mkCu = jPasswordField1.getText();
+			System.out.println(mkCu);
+			System.out.println(nv.getMatKhau());
+			if (!(nv.getMatKhau().equals(mkCu))) {
+				showMessage("Mật khẩu hiện tại của bạn không đúng!");
+				jPasswordField1.requestFocus();
+				jPasswordField1.selectAll();
+			}else {
+				String matKhauMoi_01 = jPasswordField2.getText();
+				String matKhauMoi_02 = jPasswordField3.getText(); 
+				if (!(matKhauMoi_01.equals(matKhauMoi_02))) {
+					showMessage("Mật khẩu mới không trùng nhau!");
+					jPasswordField3.requestFocus();
+					jPasswordField3.selectAll();
+				}else {
+					NhanVien nvMoi = new NhanVien(nv.getMaNhanVien(), nv.getTenNhanVien(), nv.getNgaySinh(), nv.isGioiTinh(), nv.getSoDienThoai(), matKhauMoi_02, nv.getNgayTao(), nv.getGhiChu(), nv.getTrangThaiNhanVien(), nv.getChucVu());
+					out.writeUTF("CAPNHAT_NV");
+					out.flush();
+					out.writeObject(nvMoi);
+					out.flush();
+					
+					showMessage("Cập nhật thành công!");
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void showMessage(String string) {
+		// TODO Auto-generated method stub
+		JOptionPane.showMessageDialog(this, string);
+	}
+
+	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
     	AddContent.addContent(new TaiKhoan());
         

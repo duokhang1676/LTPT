@@ -36,7 +36,7 @@ import entities.TrangThaiHangHoa;
  *
  * @author Admin
  */
-public class TaoHangHoa extends javax.swing.JPanel {
+public class XemChiTietHangHoa extends javax.swing.JPanel {
 
 
 	protected  DefaultTableModel model_DVT;
@@ -52,7 +52,7 @@ public class TaoHangHoa extends javax.swing.JPanel {
 	/**
      * Creates new form TaoHangHoa2
      */
-    public TaoHangHoa() {
+    public XemChiTietHangHoa() {
         initComponents();
         ResizeContent.resizeContent(this);
         loadNhomHang();
@@ -781,157 +781,69 @@ public class TaoHangHoa extends javax.swing.JPanel {
     }
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LuuActionPerformed
         // TODO add your handling code here:
-    	if (validData()) {
-    		try (Socket socket = new Socket(ip, port)){
-        		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-    			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-    			
-    			
-    			String tenHH = txt_tenHangHoa1.getText();
-    			NhomHang nhomHang = dsNhomHang.get(cb_nhomHangHoa.getSelectedIndex());
-    			NhaCungCap ncc = dsNCC.get(cb_loaiHangHoa.getSelectedIndex());
-    	
-    			String nuocSX = txt_nuocSX.getText();
-    	    	String hangSX = txt_hangSanXuat.getText();
-    	    	
-    	    	String moTa = txt_moTa.getText();
-    	    	Double thue = Double.parseDouble(txt_vat.getText());
-    	    	String maVach = txt_maVach.getText();
-    	    	int soLuongDM = Integer.parseInt(txt_soLuongDinhMuc1.getText());
-    	    	int soLuongCB = Integer.parseInt(txt_soLuongCanhBao.getText());
-    	    	
-    	    	LocalDate ngaySX = txt_ngaySX.getDate();
-    	    	LocalDate hanSD = txt_hanSD.getDate();
-    	    	
-    	    	String donViTinh = txt_donViTinh.getText();
-    	    	TrangThaiHangHoa trangThai = null;
-    	    	String selectedTrangThai = cb_trangThai.getSelectedItem().toString();
-    	    	if (selectedTrangThai.equals("Đang bán")) {
-    	    		trangThai = TrangThaiHangHoa.DANG_BAN;
-    			}else {
-    				trangThai = TrangThaiHangHoa.NGUNG_BAN;
-    			}
-    			
-    	    	entities.HangHoa hh = new entities.HangHoa("", tenHH, nhomHang, nuocSX, hangSX, moTa, thue, maVach, soLuongDM, soLuongCB, donViTinh, soLuongDM, soLuongCB, ncc, ngaySX, hanSD, trangThai);
-    			
-    	    	
-    	    	out.writeUTF("THEM_HANGHOA");
-    			out.flush();
-    			out.writeObject(hh);
-    			out.flush();
-    			
-    			if (in.readBoolean()) {
-    				showMessage("Thêm hàng hóa mới thành công!");
-    			}
-    		} catch (Exception e) {
-    			// TODO: handle exception
-    			e.printStackTrace();
-    		}
+    	try (Socket socket = new Socket(ip, port)){
+    		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String maHH = txt_maHangHoa.getText();
+			String tenHH = txt_tenHangHoa1.getText();
+			
+//			out.writeUTF("GET_DANHSACH_NHOMHANG");
+//			out.flush();
+//			dsNhomHang = (List<entities.NhomHang>)in.readObject();
+			NhomHang nhomHang = dsNhomHang.get(cb_nhomHangHoa.getSelectedIndex());
+			
+			
+//			out.writeUTF("GET_DANHSACH_NCC");
+//			out.flush();
+//			dsNCC = (List<entities.NhaCungCap>)in.readObject();
+			NhaCungCap ncc = dsNCC.get(cb_loaiHangHoa.getSelectedIndex());
+			
+			
+			String nuocSX = txt_nuocSX.getText();
+	    	String hangSX = txt_hangSanXuat.getText();
+	    	
+	    	String moTa = txt_moTa.getText();
+	    	Double thue = Double.parseDouble(txt_vat.getText());
+	    	String maVach = txt_maVach.getText();
+	    	int soLuongDM = Integer.parseInt(txt_soLuongDinhMuc1.getText());
+	    	int soLuongCB = Integer.parseInt(txt_soLuongCanhBao.getText());
+	    	
+	    	LocalDate ngaySX = txt_ngaySX.getDate();
+	    	LocalDate hanSD = txt_hanSD.getDate();
+	    	
+	    	String donViTinh = txt_donViTinh.getText();
+	    	TrangThaiHangHoa trangThai = null;
+	    	String selectedTrangThai = cb_trangThai.getSelectedItem().toString();
+	    	if (selectedTrangThai.equals("Đang bán")) {
+	    		trangThai = TrangThaiHangHoa.DANG_BAN;
+			}else {
+				trangThai = TrangThaiHangHoa.NGUNG_BAN;
+			}
+			
+	    	entities.HangHoa hh = new entities.HangHoa(maHH, tenHH, nhomHang, nuocSX, hangSX, moTa, thue, maVach, soLuongDM, soLuongCB, donViTinh, soLuongDM, soLuongCB, ncc, ngaySX, hanSD, trangThai);
+			
+	    	
+	    	out.writeUTF("CAPNHAT_HANGHOA");
+			out.flush();
+			out.writeObject(hh);
+			out.flush();
+			
+			JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+	    	
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
+    	
+    	
     	
     	
     	
     }//GEN-LAST:event_btn_LuuActionPerformed
 
     
-	private boolean validData() {
-		// TODO Auto-generated method stub
-		String tenHH = txt_tenHangHoa1.getText().trim();
-		String giaBanStr = txt_giaBan.getText().trim();
-		String soLuongDMStr = txt_soLuongDinhMuc1.getText().trim();
-		String soLuongCBStr = txt_soLuongCanhBao.getText().trim();
-		String vatStr = txt_vat.getText().trim();
-		
-		if (tenHH.length() <= 0) {
-			showMessage("Tên hàng hóa không được để trống!");
-			return false;
-		}
-		
-		if (giaBanStr.length() > 0) {
-			try {
-				double giaBan = Double.parseDouble(giaBanStr);
-				if (!(giaBan > 0)) {
-					showMessage("Giá bán phải lớn hơn 0!");
-					txt_giaBan.requestFocus();
-					txt_giaBan.selectAll();
-					return false;
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				showMessage("Giá bán phải nhập số!");
-				txt_giaBan.requestFocus();
-				txt_giaBan.selectAll();
-				return false;
-			}
-		}else {
-			showMessage("Giá bán không được để trống!");
-			return false;
-		}
-		
-		if (soLuongDMStr.length() > 0) {
-			try {
-				double soLuongDM = Double.parseDouble(soLuongDMStr);
-				if (!(soLuongDM > 0)) {
-					showMessage("Số lượng định mức phải lớn hơn 0!");
-					txt_soLuongDinhMuc1.requestFocus();
-					txt_soLuongDinhMuc1.selectAll();
-					return false;
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				showMessage("Số lượng định mức phải nhập số!");
-				txt_soLuongDinhMuc1.requestFocus();
-				txt_soLuongDinhMuc1.selectAll();
-				return false;
-			}
-		}else {
-			showMessage("Số lượng định mức không được để trống!");
-			return false;
-		}
-		
-		if (soLuongCBStr.length() > 0) {
-			try {
-				double soLuongCB = Double.parseDouble(soLuongCBStr);
-				if (!(soLuongCB > 0)) {
-					showMessage("Số lượng cảnh báo phải lớn hơn 0!");
-					txt_soLuongCanhBao.requestFocus();
-					txt_soLuongCanhBao.selectAll();
-					return false;
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				showMessage("Số lượng cảnh báo phải nhập số!");
-				txt_soLuongCanhBao.requestFocus();
-				txt_soLuongCanhBao.selectAll();
-				return false;
-			}
-		}else {
-			showMessage("Số lượng cảnh báo không được để trống!");
-			return false;
-		}
-		
-		if (vatStr.length() > 0) {
-			try {
-				double vat = Double.parseDouble(vatStr);
-				if (!(vat > 0)) {
-					showMessage("Thuế phải lớn hơn 0!");
-					txt_vat.requestFocus();
-					txt_vat.selectAll();
-					return false;
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				showMessage("Thuế phải nhập số!");
-				txt_vat.requestFocus();
-				txt_vat.selectAll();
-				return false;
-			}
-		}else {
-			showMessage("Thuế không được để trống!");
-			return false;
-		}
-		return true;
-	}
 
 	private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         // TODO add your handling code here:

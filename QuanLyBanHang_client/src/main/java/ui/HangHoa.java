@@ -103,7 +103,7 @@ public class HangHoa extends javax.swing.JPanel implements MouseListener{
 //				dsHangHoa.add(hangHoa);
 //			}
 			dsHangHoa = (List<entities.HangHoa>)in.readObject();
-			System.out.println(dsHangHoa);
+			
 			
 		} catch (Exception e) {
 			// TODO: handle exception

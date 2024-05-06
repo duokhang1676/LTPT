@@ -167,6 +167,7 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
         jLabel17 = new javax.swing.JLabel();
         txtSoDienThoai1 = new javax.swing.JTextField();
         txtSoDienThoai2 = new javax.swing.JTextField();
+        btn_capNhat = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlNorth = new javax.swing.JPanel();
         btn_Tim = new javax.swing.JButton();
@@ -292,6 +293,13 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
         txtSoDienThoai2.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         txtSoDienThoai2.setPreferredSize(new java.awt.Dimension(64, 35));
 
+        btn_capNhat.setText("Cập nhật");
+        btn_capNhat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_capNhatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlFormLayout = new javax.swing.GroupLayout(pnlForm);
         pnlForm.setLayout(pnlFormLayout);
         pnlFormLayout.setHorizontalGroup(
@@ -331,14 +339,13 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
                     .addGroup(pnlFormLayout.createSequentialGroup()
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(pnlFormLayout.createSequentialGroup()
-                                    .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(27, 27, 27)
-                                    .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(pnlFormLayout.createSequentialGroup()
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(277, 277, 277)))
+                            .addGroup(pnlFormLayout.createSequentialGroup()
+                                .addComponent(btn_capNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(27, 27, 27)
+                                .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
@@ -383,7 +390,8 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
                         .addGap(39, 39, 39)
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_capNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(51, 51, 51)
                 .addComponent(pnlFooter, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(143, Short.MAX_VALUE))
@@ -561,6 +569,7 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
 		jTextArea1.setText("");
 		
     	jComboBox2.setSelectedIndex(0);
+    	loadDataNCC();
     	
         
     }//GEN-LAST:event_btn_DongActionPerformed
@@ -627,17 +636,53 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
 	private void btn_themNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_themNCCActionPerformed
         // TODO add your handling code here:
         pnl_left.setVisible(true);
+        btn_capNhat.setVisible(false);
     }//GEN-LAST:event_btn_themNCCActionPerformed
 
     private void txt_timKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_timKiemActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_timKiemActionPerformed
 
+    private void btn_capNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_capNhatActionPerformed
+        // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)){
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String maNCC = txt_maNhanVien.getText();
+			String tenNCC = txtTenNhanVien.getText();
+			String soDT = txtSoDienThoai.getText();
+			String email = txtSoDienThoai2.getText();
+			String diaChi = txtSoDienThoai1.getText();
+			String ghiChu = jTextArea1.getText();
+			TrangThaiNCC trangThai = null;
+	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+	    		trangThai = TrangThaiNCC.DANG_HOAT_DONG;
+			}else {
+				trangThai = TrangThaiNCC.NGUNG_HOAT_DONG;
+			}
+	    	
+	    	entities.NhaCungCap ncc = new entities.NhaCungCap(maNCC, tenNCC, soDT, diaChi, email, ghiChu, trangThai);
+	    	
+	    	out.writeUTF("CAPNHAT_NCC");
+			out.flush();
+			out.writeObject(ncc);
+			out.flush();
+			
+			showMessage("Cập nhật thành công!");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+    }//GEN-LAST:event_btn_capNhatActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Dong;
     private javax.swing.JButton btn_Luu;
     private javax.swing.JButton btn_Tim;
+    private javax.swing.JButton btn_capNhat;
     private javax.swing.JButton btn_themNCC;
     private javax.swing.JComboBox<String> cb_trangThai;
     private javax.swing.JComboBox<String> jComboBox2;
@@ -675,6 +720,7 @@ public class NhaCungCap extends javax.swing.JPanel implements MouseListener{
 		if (e.getClickCount() == 2) {
 			pnl_left.setVisible(true);
 			btn_Luu.setVisible(false);
+			btn_capNhat.setVisible(true);
 			
 			int row = tbl_NCC.getSelectedRow();
 	    	String ma = tbl_NCC.getValueAt(row, 1).toString();

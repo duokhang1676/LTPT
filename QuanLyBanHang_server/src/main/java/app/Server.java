@@ -134,6 +134,10 @@ class ClientHandler implements Runnable {
 				case "CAPNHAT_KHACHHANG":
 					khachHangService.updateKH((KhachHang)in.readObject());
 					break;
+				case "CAPNHAT_NCC":
+					nhaCungCapService.update((NhaCungCap)in.readObject());
+				case "CAPNHAT_NV":
+					nhanVienService.update((NhanVien)in.readObject());
 				case "THEM_HANGHOA":
 					boolean rsThemHH = hangHoaService.add((HangHoa)in.readObject());
 					out.writeBoolean(rsThemHH);

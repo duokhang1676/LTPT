@@ -6,6 +6,7 @@ package ui;
 
 import components.AddContent;
 import components.ColorSample;
+import components.LoginInfo;
 import components.PnlBanHang;
 import components.ResizeContent;
 import components.StatusMenu;
@@ -134,7 +135,8 @@ public class RootFrame extends javax.swing.JFrame {
         });
 
         lblUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/icons8-avatar-32.png"))); // NOI18N
-        lblUser.setText("Username");
+        entities.NhanVien nv = LoginInfo.nhanVien;
+        lblUser.setText(nv.getTenNhanVien());
         lblUser.setPreferredSize(new java.awt.Dimension(100, 60));
         lblUser.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

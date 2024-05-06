@@ -318,10 +318,10 @@ public class DangNhap extends javax.swing.JFrame {
 
     private void btn_dangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dangNhapActionPerformed
         // TODO add your handling code here
-//    	if(!KiemTraDangNhap()) {
-//    		
-//    		return;
-//    	}
+    	if(!KiemTraDangNhap()) {
+    		
+    		return;
+    	}
     		
     	
         this.setVisible(false);

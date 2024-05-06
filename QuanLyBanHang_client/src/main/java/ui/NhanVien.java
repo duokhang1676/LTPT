@@ -43,6 +43,7 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
 	private int port = ConnectServer.port;
 	private List<entities.NhanVien> dsNV;
 	private entities.NhanVien n;
+    private entities.NhanVien nv;
 	/**
      * Creates new form NhanVien_httk
      */
@@ -164,6 +165,7 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jLabel17 = new javax.swing.JLabel();
+        btn_capNhat = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlNorth = new javax.swing.JPanel();
         btn_Tim = new javax.swing.JButton();
@@ -203,6 +205,11 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
 
         txtSoDienThoai.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         txtSoDienThoai.setPreferredSize(new java.awt.Dimension(64, 35));
+        txtSoDienThoai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionPerformed(evt);
+            }
+        });
 
         pnlFooter.setBackground(new java.awt.Color(255, 255, 255));
         pnlFooter.setPreferredSize(new java.awt.Dimension(470, 50));
@@ -313,6 +320,13 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
         jLabel17.setText("Trạng thái");
         jLabel17.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
 
+        btn_capNhat.setText("Cập nhật");
+        btn_capNhat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_capNhatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlFormLayout = new javax.swing.GroupLayout(pnlForm);
         pnlForm.setLayout(pnlFormLayout);
         pnlFormLayout.setHorizontalGroup(
@@ -368,7 +382,8 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
                         .addComponent(jLabel4)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(pnlFormLayout.createSequentialGroup()
-                        .addGap(123, 123, 123)
+                        .addComponent(btn_capNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -425,7 +440,8 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
                         .addGap(39, 39, 39)
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_Dong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_capNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(51, 51, 51)
                 .addComponent(pnlFooter, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(143, Short.MAX_VALUE))
@@ -696,7 +712,7 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
 		jTextArea1.setText("");
 		
     	jComboBox2.setSelectedIndex(0);
-    	
+    	loadDataNV();
         
         
     }//GEN-LAST:event_btn_DongActionPerformed
@@ -724,11 +740,59 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
     private void btn_Tim1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Tim1ActionPerformed
         // TODO add your handling code here:
         pnl_left.setVisible(true);
+        btn_capNhat.setVisible(false);
     }//GEN-LAST:event_btn_Tim1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void btn_capNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_capNhatActionPerformed
+        // TODO add your handling code here:
+    	try (Socket socket = new Socket(ip, port)){
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			String maNV = txt_maNhanVien.getText();
+			String tenKH = txtTenNhanVien.getText();
+			String soDT = txtSoDienThoai.getText();
+			LocalDate ngaySinh = datePicker1.getDate();
+			LocalDate ngayTao = datePicker2.getDate();
+			ChucVuNhanVien chucVu = null;
+			String selectedChucVu = jComboBox3.getSelectedItem().toString();
+			if (selectedChucVu.equals("Nhân viên")) {
+				chucVu = ChucVuNhanVien.NHAN_VIEN;
+			}else {
+				chucVu = ChucVuNhanVien.QUAN_LY;
+			}
+			Boolean gioiTinh = false;
+			if (jRadioButton1.isSelected()) {
+				gioiTinh = true;
+			}else {
+				gioiTinh = false;
+			}
+			String ghiChu = jTextArea1.getText();
+			TrangThaiNhanVien trangThai = null;
+	    	String selectedTrangThai = jComboBox2.getSelectedItem().toString();
+	    	if (selectedTrangThai.equals("Đang hoạt động")) {
+	    		trangThai = TrangThaiNhanVien.DANG_HOAT_DONG;
+			}else {
+				trangThai = TrangThaiNhanVien.NGUNG_HOAT_DONG;
+			}
+	    	
+	    	entities.NhanVien nv = new entities.NhanVien(maNV, tenKH, ngaySinh, gioiTinh, soDT, "password", ngayTao, ghiChu, trangThai, chucVu);
+	    	
+	    	out.writeUTF("CAPNHAT_NV");
+			out.flush();
+			out.writeObject(nv);
+			out.flush();
+			
+			showMessage("Cập nhật thành công!");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+    }//GEN-LAST:event_btn_capNhatActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -736,6 +800,7 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
     private javax.swing.JButton btn_Luu;
     private javax.swing.JButton btn_Tim;
     private javax.swing.JButton btn_Tim1;
+    private javax.swing.JButton btn_capNhat;
     private com.github.lgooddatepicker.components.DatePicker datePicker1;
     private com.github.lgooddatepicker.components.DatePicker datePicker2;
     private javax.swing.JComboBox<String> jComboBox1;
@@ -773,7 +838,6 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
     private javax.swing.JTextField txtSoDienThoai;
     private javax.swing.JTextField txtTenNhanVien;
     private javax.swing.JTextField txt_maNhanVien;
-	private entities.NhanVien nv;
     // End of variables declaration//GEN-END:variables
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -781,6 +845,7 @@ public class NhanVien extends javax.swing.JPanel implements MouseListener {
 		if (e.getClickCount() == 2) {
 			pnl_left.setVisible(true);
 			btn_Luu.setVisible(false);
+			btn_capNhat.setVisible(true);
 			
 			int row = tbl_NV.getSelectedRow();
 	    	String ma = tbl_NV.getValueAt(row, 1).toString();

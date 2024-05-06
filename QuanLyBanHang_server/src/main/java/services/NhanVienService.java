@@ -49,5 +49,22 @@ public class NhanVienService implements NhanVienDAO{
 		// TODO Auto-generated method stub
 		return entityManager.createQuery("Select n from NhanVien n", NhanVien.class).getResultList();
 	}
+	@Override
+	public boolean update(NhanVien nv) {
+		// TODO Auto-generated method stub
+		EntityTransaction trans = entityManager.getTransaction();
+		try {
+			trans.begin();
+			entityManager.merge(nv);
+			trans.commit();
+			return true;
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 }

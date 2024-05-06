@@ -136,7 +136,8 @@
                                   <EmptySpace max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
+                                  <Component id="btn_capNhat" min="-2" pref="105" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="btn_Luu" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                   <Component id="btn_Dong" min="-2" pref="125" max="-2" attributes="0"/>
@@ -206,6 +207,7 @@
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="btn_Dong" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="btn_Luu" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="btn_capNhat" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -250,6 +252,9 @@
                       <Dimension value="[64, 35]"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtSoDienThoaiActionPerformed"/>
+                  </Events>
                 </Component>
                 <Container class="javax.swing.JPanel" name="pnlFooter">
                   <Properties>
@@ -476,6 +481,14 @@
                       <Font name="Times New Roman" size="18" style="0"/>
                     </Property>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="btn_capNhat">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="C&#x1ead;p nh&#x1ead;t"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_capNhatActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

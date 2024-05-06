@@ -56,4 +56,22 @@ public class NhaCungCapService implements NhaCungCapDAO{
 		return false;
 	}
 
+	@Override
+	public boolean update(NhaCungCap ncc) {
+		// TODO Auto-generated method stub
+		EntityTransaction trans = entityManager.getTransaction();
+		try {
+			trans.begin();
+			entityManager.merge(ncc);
+			trans.commit();
+			return true;
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

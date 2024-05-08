@@ -10,6 +10,7 @@ import components.LoginInfo;
 import components.PnlBanHang;
 import components.ResizeContent;
 import components.StatusMenu;
+import entities.ChucVuNhanVien;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -901,6 +902,7 @@ public class RootFrame extends javax.swing.JFrame {
     private void config() {
         lblTienIch.setVisible(false);
         btnThongKe.setVisible(false);
-        
+        if(LoginInfo.nhanVien.getChucVu()==ChucVuNhanVien.NHAN_VIEN)
+        	btnNhanSu.setVisible(false);
     }
 }

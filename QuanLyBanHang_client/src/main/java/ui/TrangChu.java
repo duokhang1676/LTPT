@@ -9,6 +9,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
@@ -21,8 +24,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import components.ColorSample;
+import components.ConnectServer;
 import components.FormatJtable;
 import components.Formater;
+import entities.HoaDon;
+import entities.TrangThaiHoaDon;
 
 
 /**
@@ -463,7 +469,28 @@ public class TrangChu extends javax.swing.JPanel {
          btn_hangDaHetHan.setFont(unSelected_font);
          btn_hangDaHetHan.setForeground(Color.BLACK);
     }//GEN-LAST:event_btn_hangSapHetActionPerformed
-    
+    private List<HoaDon> getFromTo(LocalDate from, LocalDate to) {
+		try (Socket socket = new Socket(ConnectServer.ip, ConnectServer.port)) {
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			
+			out.writeUTF("GET_HOADON_THEOTG");
+			out.flush();
+			out.writeObject(from);
+			out.flush();
+			out.writeObject(to);
+			out.flush();
+			out.writeObject(TrangThaiHoaDon.HOAN_THANH);
+			out.flush();
+			
+			List<HoaDon> dsHD = (List<entities.HoaDon>)in.readObject();
+			return dsHD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+    }
     private void loadData() {
     	 // Lấy ngày hiện tại
         LocalDate today = LocalDate.now();
@@ -473,16 +500,42 @@ public class TrangChu extends javax.swing.JPanel {
         LocalDate firstDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
         // Lấy ngày kết thúc của tháng trước
         LocalDate lastDayOfLastMonth = today.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
- 
-//    	jL_doanhThuThangTruoc.setText("  "+Formater.decimalFormat(hoaDonDao.getTongTienHoaDonTrongKhoang(firstDayOfLastMonth, lastDayOfLastMonth)-
-//    			phieuTraHangDao.getTongTienHoaDonTraTrongKhoang(firstDayOfLastMonth, lastDayOfLastMonth)));
-//    	jL_doanhThuThangNay.setText("  "+Formater.decimalFormat(hoaDonDao.getTongTienHoaDonTrongKhoang(firstDayOfMonth, today)-
-//    			phieuTraHangDao.getTongTienHoaDonTraTrongKhoang(firstDayOfMonth, today)));
-//    	jL_hoaDonThangTruoc.setText("  "+hoaDonDao.getSoLuongHoaDonTrongKhoang(firstDayOfLastMonth, lastDayOfLastMonth)+"");
-//    	jL_hoaDonThangNay.setText("  "+hoaDonDao.getSoLuongHoaDonTrongKhoang(firstDayOfMonth, today)+"");
-//    	jL_doanhThuThuDuoc.setText("  "+Formater.decimalFormat(hoaDonDao.getTongTienHoaDonTrongKhoang(today, today)-
-//    			phieuTraHangDao.getTongTienHoaDonTraTrongKhoang(today, today)));
-//    	jL_soHoaDonNgay.setText("  "+hoaDonDao.getSoLuongHoaDonTrongKhoang(today, today)+"");
+        
+        List<HoaDon> dsHDThangNay = getFromTo(firstDayOfMonth, today);
+        List<HoaDon> dsHDThangTruoc = getFromTo(firstDayOfLastMonth, lastDayOfLastMonth);
+        List<HoaDon> dsHDTrongNgay = getFromTo(today, today.plusDays(1));
+        double doanhSoThangNay = 0;
+        double doanhSoThangTruoc = 0;
+        double doanhThuTrongNgay = 0;
+        int soHDThangNay = 0;
+        int soHDThangTruoc = 0;
+        int soHDTrongNgay = 0;
+        
+        if(dsHDThangNay!=null) {
+        	for (HoaDon hd : dsHDThangNay) {
+				doanhSoThangNay += hd.getThanhTien();
+				soHDThangNay+=1;
+			}
+        }
+        if(dsHDThangTruoc!=null) {
+        	for (HoaDon hd : dsHDThangTruoc) {
+        		doanhSoThangTruoc += hd.getThanhTien();
+        		soHDThangTruoc+=1;
+			}
+        }
+        if(dsHDTrongNgay!=null) {
+        	for (HoaDon hd : dsHDTrongNgay) {
+        		doanhThuTrongNgay += hd.getThanhTien();
+        		soHDTrongNgay+=1;
+			}
+        }
+        
+    	jL_doanhThuThangTruoc.setText("  "+Formater.decimalFormat(doanhSoThangTruoc));
+    	jL_doanhThuThangNay.setText("  "+Formater.decimalFormat(doanhSoThangNay));
+    	jL_hoaDonThangTruoc.setText("  "+soHDThangTruoc);
+    	jL_hoaDonThangNay.setText("  "+soHDThangNay);
+    	jL_doanhThuThuDuoc.setText("  "+Formater.decimalFormat(doanhThuTrongNgay));
+    	jL_soHoaDonNgay.setText("  "+soHDTrongNgay);
     	
     	Font selected_font = new Font("Times new roman", Font.BOLD, 18);
         Font unSelected_font = new Font("Times new roman",0, 18);
@@ -575,9 +628,9 @@ public class TrangChu extends javax.swing.JPanel {
     	FormatJtable.setFontJtable(tb_hangHoa);
     	FormatJtable.setCellEditable(tb_hangHoa);
     }
-    String header[] = "STT;Mã hàng hóa;Tên hàng hóa;Số lô;Số lượng;Hạn sử dụng".split(";");
+    String header[] = "STT;Mã hàng hóa;Tên hàng hóa;Số lượng;Hạn sử dụng".split(";");
     private DefaultTableModel loHangModel = new DefaultTableModel(header,0);
-   
+    private List<HoaDon> dsHD = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_hangDaHetHan;
     private javax.swing.JButton btn_hangSapHet;

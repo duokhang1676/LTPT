@@ -989,7 +989,7 @@ public class BanHang extends javax.swing.JPanel {
         	updateKhachHang(khachHang);
     	}
 		drop();
-    	//PrintExample.printContent();
+    	PrintExample.printContent();
     	
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
